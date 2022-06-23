@@ -1,5 +1,5 @@
 use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
-use serde_json::{json, Value};
+use serde_json::json;
 use urlencoding::encode;
 
 pub struct GoTrueApi {
@@ -53,8 +53,6 @@ impl GoTrueApi {
             .send()
             .unwrap();
 
-        println!("{}", res.text().unwrap());
-
-        return Ok(String::from("ASD"));
+        return Ok("Success".to_string());
     }
 }

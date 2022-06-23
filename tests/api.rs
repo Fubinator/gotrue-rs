@@ -14,9 +14,6 @@ fn it_signs_up_with_email() {
     let email = String::from("test@test.de");
     let password = String::from("Abcd1234!");
 
-    let res = api
-        .sign_up_with_email(&email, &password, None, None)
-        .unwrap();
-    println!("{}", res);
+    let res = api.sign_up_with_email(&email, &password, None).unwrap();
     assert_eq!(1, 1);
 }
