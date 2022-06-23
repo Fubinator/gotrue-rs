@@ -32,3 +32,23 @@ fn it_signs_in_with_email() {
     let res = api.sign_in_with_email(&email, &password, None).unwrap();
     assert_eq!(1, 1);
 }
+
+#[test]
+fn it_signs_up_with_phone() {
+    let phone = String::from("+49123132123");
+    let password = String::from("Abcd1234!");
+    let api = getApiCLient();
+
+    let res = api.sign_up_with_phone(&phone, &password).unwrap();
+    assert_eq!(1, 1);
+}
+
+#[test]
+fn it_signs_in_with_phone() {
+    let phone = String::from("+49123132123");
+    let password = String::from("Abcd1234!");
+    let api = getApiCLient();
+
+    let res = api.sign_in_with_phone(&phone, &password).unwrap();
+    assert_eq!(1, 1);
+}
