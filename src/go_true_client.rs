@@ -1,5 +1,7 @@
 use crate::go_true_api::GoTrueApi;
 
+use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
+
 struct User {
     id: String,
     aud: String,
@@ -39,7 +41,7 @@ pub struct GoTrueClient {
 }
 
 impl GoTrueClient {
-    pub fn new() -> GoTrueClient {
+    pub fn new(url: String) -> GoTrueClient {
         let user = User {
             id: String::from(""),
             aud: String::from(""),
@@ -71,7 +73,7 @@ impl GoTrueClient {
                 token_type: String::from(""),
                 user,
             },
-            api: GoTrueApi::new(String::from("Some kind of url")),
+            api: GoTrueApi::new(url),
         }
     }
 
