@@ -1,6 +1,6 @@
 ## Getting Started
 
-This is a GoTrue implementation in rust. Currently WIP.
+This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. Currently WIP (see the Status section for the current progress).
 
 ## Status
 
