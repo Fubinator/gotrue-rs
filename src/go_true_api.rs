@@ -55,4 +55,35 @@ impl GoTrueApi {
 
         return Ok("Success".to_string());
     }
+
+    pub fn sign_in_with_email(
+        self,
+        email: &String,
+        password: &String,
+        redirect_to: Option<String>,
+    ) -> Result<String, reqwest::Error> {
+        let query_string = match redirect_to {
+            Some(query) => format!("?grant_type=password&redirect_to={}", encode(&query)),
+            _ => String::from("?grant_type=password"),
+        };
+
+        let endpoint = format!("{}/token{}", self.url, query_string);
+
+        let body = json!({
+            "email": &email,
+            "password": &password,
+        });
+
+        let client = reqwest::blocking::Client::new();
+        let res: reqwest::blocking::Response = client
+            .post(endpoint)
+            .headers(self.headers)
+            .json(&body)
+            .send()
+            .unwrap();
+
+        println!("{}", res.text().unwrap());
+
+        return Ok("Success".to_string());
+    }
 }
