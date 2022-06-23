@@ -86,4 +86,53 @@ impl GoTrueApi {
 
         return Ok("Success".to_string());
     }
+
+    pub fn sign_up_with_phone(
+        self,
+        phone: &String,
+        password: &String,
+    ) -> Result<String, reqwest::Error> {
+        let endpoint = format!("{}/signup", self.url);
+
+        let body = json!({
+            "phone": &phone,
+            "password": &password,
+        });
+
+        let client = reqwest::blocking::Client::new();
+        let res: reqwest::blocking::Response = client
+            .post(endpoint)
+            .headers(self.headers)
+            .json(&body)
+            .send()
+            .unwrap();
+        println!("{}", res.text().unwrap());
+
+        return Ok("Success".to_string());
+    }
+
+    pub fn sign_in_with_phone(
+        self,
+        phone: &String,
+        password: &String,
+    ) -> Result<String, reqwest::Error> {
+        let endpoint = format!("{}/token?grant_type=password", self.url);
+
+        let body = json!({
+            "phone": &phone,
+            "password": &password,
+        });
+
+        let client = reqwest::blocking::Client::new();
+        let res: reqwest::blocking::Response = client
+            .post(endpoint)
+            .headers(self.headers)
+            .json(&body)
+            .send()
+            .unwrap();
+
+        println!("{}", res.text().unwrap());
+
+        return Ok("Success".to_string());
+    }
 }
