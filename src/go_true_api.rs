@@ -1,5 +1,6 @@
 use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::{json, Value};
+use urlencoding::encode;
 
 pub struct GoTrueApi {
     url: String,
@@ -31,17 +32,18 @@ impl GoTrueApi {
         email: &String,
         password: &String,
         redirect_to: Option<String>,
-        captcha_token: Option<String>,
     ) -> Result<String, reqwest::Error> {
-        // let query_string: String = redirect_to.unwrap_or(String::from(""));
+        let query_string = match redirect_to {
+            Some(query) => format!("?redirect_to={}", encode(&query)),
+            _ => String::from(""),
+        };
+
+        let endpoint = format!("{}/signup{}", self.url, query_string);
+
         let body = json!({
             "email": &email,
-            "password": &password
+            "password": &password,
         });
-
-        print!("{}", body);
-
-        let endpoint = format!("{}/signup", self.url);
 
         let client = reqwest::blocking::Client::new();
         let res: reqwest::blocking::Response = client
