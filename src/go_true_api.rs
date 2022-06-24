@@ -1,6 +1,12 @@
-use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
+use reqwest::{
+    blocking::Response,
+    header::{HeaderMap, HeaderValue, IntoHeaderName},
+    StatusCode,
+};
 use serde_json::json;
 use urlencoding::encode;
+
+use crate::session::Session;
 
 pub struct GoTrueApi {
     url: String,
@@ -32,7 +38,7 @@ impl GoTrueApi {
         email: &String,
         password: &String,
         redirect_to: Option<String>,
-    ) -> Result<String, reqwest::Error> {
+    ) -> Result<Session, reqwest::Error> {
         let query_string = match redirect_to {
             Some(query) => format!("?redirect_to={}", encode(&query)),
             _ => String::from(""),
@@ -46,14 +52,17 @@ impl GoTrueApi {
         });
 
         let client = reqwest::blocking::Client::new();
-        let res: reqwest::blocking::Response = client
+        let response: Session = client
             .post(endpoint)
             .headers(self.headers)
             .json(&body)
             .send()
+            .unwrap()
+            .error_for_status()?
+            .json()
             .unwrap();
 
-        return Ok("Success".to_string());
+        return Ok(response);
     }
 
     pub fn sign_in(
@@ -61,7 +70,7 @@ impl GoTrueApi {
         email: &String,
         password: &String,
         redirect_to: Option<String>,
-    ) -> Result<String, reqwest::Error> {
+    ) -> Result<Session, reqwest::Error> {
         let query_string = match redirect_to {
             Some(query) => format!("?grant_type=password&redirect_to={}", encode(&query)),
             _ => String::from("?grant_type=password"),
@@ -75,15 +84,16 @@ impl GoTrueApi {
         });
 
         let client = reqwest::blocking::Client::new();
-        let res: reqwest::blocking::Response = client
+        let response: Session = client
             .post(endpoint)
             .headers(self.headers)
             .json(&body)
             .send()
+            .unwrap()
+            .error_for_status()?
+            .json()
             .unwrap();
 
-        println!("{}", res.text().unwrap());
-
-        return Ok("Success".to_string());
+        return Ok(response);
     }
 }
