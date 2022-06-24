@@ -96,4 +96,37 @@ impl GoTrueApi {
 
         return Ok(response);
     }
+
+    // This works for magic links and phone otps
+    pub fn send_otp(
+        self,
+        email: &str,
+        should_create_user: Option<bool>,
+        redirect_to: Option<String>,
+    ) -> Result<Session, reqwest::Error> {
+        let query_string = match redirect_to {
+            Some(query) => format!("?redirect_to={}", encode(&query)),
+            _ => String::from(""),
+        };
+
+        let endpoint = format!("{}/otp{}", self.url, query_string);
+
+        let body = json!({
+            "email": &email,
+            "should_create_user": Some(should_create_user)
+        });
+
+        let client = reqwest::blocking::Client::new();
+        let response: Session = client
+            .post(endpoint)
+            .headers(self.headers)
+            .json(&body)
+            .send()
+            .unwrap()
+            .error_for_status()?
+            .json()
+            .unwrap();
+
+        return Ok(response);
+    }
 }
