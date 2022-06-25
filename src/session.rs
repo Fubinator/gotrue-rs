@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::user::User;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Session {
     pub access_token: String,
     pub token_type: String,
