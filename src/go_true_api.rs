@@ -1,8 +1,4 @@
-use reqwest::{
-    blocking::Response,
-    header::{HeaderMap, HeaderValue, IntoHeaderName},
-    StatusCode,
-};
+use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
 use urlencoding::encode;
 
