@@ -1,6 +1,5 @@
 use crate::{go_true_api::GoTrueApi, session::Session};
 
-#[derive(Clone)]
 pub struct GoTrueClient {
     current_session: Option<Session>,
     auto_refresh_token: bool,
@@ -17,7 +16,7 @@ impl GoTrueClient {
     }
 
     pub fn sign_up(
-        mut self,
+        &mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
@@ -34,7 +33,7 @@ impl GoTrueClient {
     }
 
     pub fn sign_in(
-        mut self,
+        &mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
