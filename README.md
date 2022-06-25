@@ -4,9 +4,9 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
 
 ## Status
 
-- [ ] API
-  - [ ] Sign Up with Email
-  - [ ] Sign In with Email
+- [ ] Functionality
+  - [x] Sign Up with Email/Phone
+  - [x] Sign In with Email/Phone
   - [ ] Send Magic Link Email
   - [ ] Invite User by Email
   - [ ] Reset Password for Email
@@ -19,14 +19,12 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [ ] Get User by Id
   - [ ] Create User
   - [ ] Update User by Id
-- [ ] Client
   - [ ] Get User
   - [ ] Refresh Session
   - [ ] Auth State Change Handler
   - [ ] Provider Sign In (Provides URL)
-- [ ] Provide Interfaces for Custom Token Persistence Functionality
 - [ ] Documentation
-- [ ] Unit Tests
+- [x] Unit Tests
 - [ ] Cargo Release
 
 ## Testing
