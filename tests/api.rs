@@ -40,3 +40,27 @@ fn it_signs_in_with_email() {
 
     assert_eq!(res.user.email, email);
 }
+
+#[test]
+fn it_send_magic_link_with_valid_email() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password, None).unwrap();
+    let res = api.send_otp(&email, None, None).unwrap();
+
+    assert_eq!(res, true);
+}
+
+#[test]
+fn it_does_not_send_magic_link_with_invalid_email() {
+    let email = String::from("i-do-not-exist");
+    let api = get_api_client();
+    let response = api.send_otp(&email, None, None);
+
+    match response {
+        Ok(_) => panic!("Should not work"),
+        Err(_) => assert!(true),
+    }
+}
