@@ -1,34 +1,42 @@
-use dotenv;
 use go_true::go_true_api::GoTrueApi;
+use rand::{distributions::Alphanumeric, Rng};
 
-fn getApiCLient() -> GoTrueApi {
-    dotenv::from_filename(".env").ok();
-    let api: GoTrueApi = GoTrueApi::new(dotenv::var("SUPABASE_URL").unwrap())
-        .insert_header("apikey", dotenv::var("SUPABASE_API_KEY").unwrap())
-        .insert_header(
-            "Authorization",
-            format!("Bearer {}", dotenv::var("SUPABASE_API_KEY").unwrap()),
-        );
+fn get_api_client() -> GoTrueApi {
+    let api: GoTrueApi = GoTrueApi::new("http://localhost:9998".to_string());
 
     return api;
 }
 
+fn get_random_email() -> String {
+    let random_string: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(7)
+        .map(|c| c.to_ascii_lowercase())
+        .map(char::from)
+        .collect();
+
+    return format!("{random_string}@example.com");
+}
+
 #[test]
 fn it_signs_up_with_email() {
-    let email = String::from("test@test.de");
+    let email = get_random_email();
     let password = String::from("Abcd1234!");
-    let api = getApiCLient();
 
+    let api = get_api_client();
     let res = api.sign_up(&email, &password, None).unwrap();
-    assert_eq!(1, 1);
+
+    assert_eq!(res.user.email, email);
 }
 
 #[test]
 fn it_signs_in_with_email() {
-    let email = String::from("test@test.de");
+    let email = get_random_email();
     let password = String::from("Abcd1234!");
-    let api = getApiCLient();
 
+    let api = get_api_client();
+    api.clone().sign_up(&email, &password, None).unwrap();
     let res = api.sign_in(&email, &password, None).unwrap();
-    assert_eq!(1, 1);
+
+    assert_eq!(res.user.email, email);
 }
