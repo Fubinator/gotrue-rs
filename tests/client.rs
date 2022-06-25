@@ -21,7 +21,7 @@ fn it_signs_up_with_email() {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
 
-    let client = get_client();
+    let mut client = get_client();
     let res = client.sign_up(&email, &password, None);
 
     assert_eq!(res.user.email, email);
@@ -32,8 +32,8 @@ fn it_signs_in_with_email() {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
 
-    let client = get_client();
-    client.clone().sign_up(&email, &password, None);
+    let mut client = get_client();
+    client.sign_up(&email, &password, None);
     let res = client.sign_in(&email, &password, None);
 
     assert_eq!(res.user.email, email);

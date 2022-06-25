@@ -35,7 +35,7 @@ fn it_signs_in_with_email() {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.clone().sign_up(&email, &password, None).unwrap();
+    api.sign_up(&email, &password, None).unwrap();
     let res = api.sign_in(&email, &password, None).unwrap();
 
     assert_eq!(res.user.email, email);

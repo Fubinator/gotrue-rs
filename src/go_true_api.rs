@@ -4,7 +4,6 @@ use urlencoding::encode;
 
 use crate::session::Session;
 
-#[derive(Clone)]
 pub struct GoTrueApi {
     url: String,
     headers: HeaderMap,
@@ -31,7 +30,7 @@ impl GoTrueApi {
     }
 
     pub fn sign_up(
-        self,
+        &self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
@@ -51,7 +50,7 @@ impl GoTrueApi {
         let client = reqwest::blocking::Client::new();
         let response: Session = client
             .post(endpoint)
-            .headers(self.headers)
+            .headers(self.headers.clone())
             .json(&body)
             .send()
             .unwrap()
@@ -63,7 +62,7 @@ impl GoTrueApi {
     }
 
     pub fn sign_in(
-        self,
+        &self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
@@ -85,7 +84,7 @@ impl GoTrueApi {
         let client = reqwest::blocking::Client::new();
         let response: Session = client
             .post(endpoint)
-            .headers(self.headers)
+            .headers(self.headers.clone())
             .json(&body)
             .send()
             .unwrap()
@@ -98,7 +97,7 @@ impl GoTrueApi {
 
     // This works for magic links and phone otps
     pub fn send_otp(
-        self,
+        &self,
         email: &str,
         should_create_user: Option<bool>,
         redirect_to: Option<String>,
@@ -118,7 +117,7 @@ impl GoTrueApi {
         let client = reqwest::blocking::Client::new();
         let response: Session = client
             .post(endpoint)
-            .headers(self.headers)
+            .headers(self.headers.clone())
             .json(&body)
             .send()
             .unwrap()
