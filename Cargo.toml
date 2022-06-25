@@ -13,3 +13,4 @@ urlencoding = "2.1.0"
 
 [dev-dependencies]
 dotenv = "*"
+rand = "*"
