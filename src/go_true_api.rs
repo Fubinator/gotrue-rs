@@ -8,6 +8,7 @@ use urlencoding::encode;
 
 use crate::session::Session;
 
+#[derive(Clone)]
 pub struct GoTrueApi {
     url: String,
     headers: HeaderMap,
@@ -77,6 +78,8 @@ impl GoTrueApi {
         };
 
         let endpoint = format!("{}/token{}", self.url, query_string);
+
+        println!("{}", endpoint);
 
         let body = json!({
             "email": &email,
