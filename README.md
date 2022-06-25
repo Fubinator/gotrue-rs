@@ -29,6 +29,21 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
 - [ ] Unit Tests
 - [ ] Cargo Release
 
+## Testing
+
+The first thing to do is to start the supabase server in docker:
+
+```sh
+cd infra
+docker compose up
+```
+
+Once the server has been started, the tests can be run:
+
+```sh
+cargo test
+```
+
 ## Contributing
 
 We are more than happy to have contributions! Please submit a PR.
