@@ -17,20 +17,36 @@ impl GoTrueClient {
     }
 
     pub fn sign_up(
-        self,
+        mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
-    ) -> Result<Session, reqwest::Error> {
-        return self.api.sign_up(&email, &password, redirect_to);
+    ) -> Session {
+        let result = self.api.sign_up(&email, &password, redirect_to);
+
+        match result {
+            Ok(session) => {
+                self.current_session = Some(session.clone());
+                return session;
+            }
+            Err(e) => panic!("{:?}", e),
+        }
     }
 
     pub fn sign_in(
-        self,
+        mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
-    ) -> Result<Session, reqwest::Error> {
-        return self.api.sign_in(&email, &password, redirect_to);
+    ) -> Session {
+        let result = self.api.sign_in(&email, &password, redirect_to);
+
+        match result {
+            Ok(session) => {
+                self.current_session = Some(session.clone());
+                return session;
+            }
+            Err(e) => panic!("{:?}", e),
+        }
     }
 }
