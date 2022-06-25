@@ -101,7 +101,7 @@ impl GoTrueApi {
         email: &str,
         should_create_user: Option<bool>,
         redirect_to: Option<String>,
-    ) -> Result<Session, reqwest::Error> {
+    ) -> Result<bool, reqwest::Error> {
         let query_string = match redirect_to {
             Some(query) => format!("?redirect_to={}", encode(&query)),
             _ => String::from(""),
@@ -115,16 +115,14 @@ impl GoTrueApi {
         });
 
         let client = reqwest::blocking::Client::new();
-        let response: Session = client
+        client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
             .send()
             .unwrap()
-            .error_for_status()?
-            .json()
-            .unwrap();
+            .error_for_status()?;
 
-        return Ok(response);
+        return Ok(true);
     }
 }
