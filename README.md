@@ -9,9 +9,9 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Sign In with Email/Phone
   - [x] Send Magic Link Email
   - [x] Sign out
+  - [ ] Verify OTP
   - [ ] Invite User by Email
   - [ ] Reset Password for Email
-  - [ ] Signout
   - [ ] Get Url for Provider
   - [ ] Get User
   - [ ] Update User
