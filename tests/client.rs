@@ -59,3 +59,17 @@ fn it_does_not_send_magic_link_with_invalid_email() {
 
     assert_eq!(res, false);
 }
+
+#[test]
+fn it_should_log_out() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    client.sign_up(&email, &password, None);
+    client.sign_in(&email, &password, None);
+
+    let success = client.sign_out();
+
+    assert_eq!(success, true);
+}
