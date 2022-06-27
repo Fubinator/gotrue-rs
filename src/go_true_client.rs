@@ -48,6 +48,7 @@ impl GoTrueClient {
             Err(e) => panic!("{:?}", e),
         }
     }
+
     pub fn send_otp(
         &self,
         email: &str,
@@ -55,6 +56,18 @@ impl GoTrueClient {
         redirect_to: Option<String>,
     ) -> bool {
         let result = self.api.send_otp(&email, should_create_user, redirect_to);
+
+        match result {
+            Ok(_) => return true,
+            Err(_) => return false,
+        }
+    }
+
+    pub fn sign_out(&self) -> bool {
+        let result = match &self.current_session {
+            Some(session) => self.api.sign_out(&session.access_token),
+            None => return true,
+        };
 
         match result {
             Ok(_) => return true,
