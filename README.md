@@ -8,6 +8,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Sign Up with Email/Phone
   - [x] Sign In with Email/Phone
   - [x] Send Magic Link Email
+  - [x] Sign out
   - [ ] Invite User by Email
   - [ ] Reset Password for Email
   - [ ] Signout

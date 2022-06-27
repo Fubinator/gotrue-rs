@@ -64,3 +64,38 @@ fn it_does_not_send_magic_link_with_invalid_email() {
         Err(_) => assert!(true),
     }
 }
+
+#[test]
+fn it_should_log_out() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password, None).unwrap();
+    let res = api.sign_in(&email, &password, None).unwrap();
+
+    assert_eq!(res.user.email, email);
+
+    let success = api.sign_out(&res.access_token).unwrap();
+
+    assert_eq!(success, true);
+}
+
+#[test]
+fn it_should_return_error_if_token_is_invalid() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password, None).unwrap();
+    let res = api.sign_in(&email, &password, None).unwrap();
+
+    assert_eq!(res.user.email, email);
+
+    let success = api.sign_out(&"invalid-token".to_string());
+
+    match success {
+        Ok(_) => panic!("Should not work"),
+        Err(_) => assert!(true),
+    }
+}

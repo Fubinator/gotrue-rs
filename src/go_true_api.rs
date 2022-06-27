@@ -74,8 +74,6 @@ impl GoTrueApi {
 
         let endpoint = format!("{}/token{}", self.url, query_string);
 
-        println!("{}", endpoint);
-
         let body = json!({
             "email": &email,
             "password": &password,
@@ -119,6 +117,27 @@ impl GoTrueApi {
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
+            .send()
+            .unwrap()
+            .error_for_status()?;
+
+        return Ok(true);
+    }
+
+    pub fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
+        let endpoint = format!("{}/logout", self.url);
+
+        let client = reqwest::blocking::Client::new();
+        let mut headers: HeaderMap = self.headers.clone();
+        let bearer = format!("Bearer {access_token}");
+        headers.insert(
+            "Authorization",
+            HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
+        );
+
+        client
+            .post(endpoint)
+            .headers(headers)
             .send()
             .unwrap()
             .error_for_status()?;
