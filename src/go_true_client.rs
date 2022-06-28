@@ -15,13 +15,13 @@ impl GoTrueClient {
         }
     }
 
-    pub fn sign_up(
+    pub async fn sign_up(
         &mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
     ) -> Session {
-        let result = self.api.sign_up(&email, &password, redirect_to);
+        let result = self.api.sign_up(&email, &password, redirect_to).await;
 
         match result {
             Ok(session) => {
@@ -32,13 +32,13 @@ impl GoTrueClient {
         }
     }
 
-    pub fn sign_in(
+    pub async fn sign_in(
         &mut self,
         email: &String,
         password: &String,
         redirect_to: Option<String>,
     ) -> Session {
-        let result = self.api.sign_in(&email, &password, redirect_to);
+        let result = self.api.sign_in(&email, &password, redirect_to).await;
 
         match result {
             Ok(session) => {
@@ -49,13 +49,16 @@ impl GoTrueClient {
         }
     }
 
-    pub fn send_otp(
+    pub async fn send_otp(
         &self,
         email: &str,
         should_create_user: Option<bool>,
         redirect_to: Option<String>,
     ) -> bool {
-        let result = self.api.send_otp(&email, should_create_user, redirect_to);
+        let result = self
+            .api
+            .send_otp(&email, should_create_user, redirect_to)
+            .await;
 
         match result {
             Ok(_) => return true,
@@ -63,9 +66,9 @@ impl GoTrueClient {
         }
     }
 
-    pub fn sign_out(&self) -> bool {
+    pub async fn sign_out(&self) -> bool {
         let result = match &self.current_session {
-            Some(session) => self.api.sign_out(&session.access_token),
+            Some(session) => self.api.sign_out(&session.access_token).await,
             None => return true,
         };
 
@@ -75,8 +78,8 @@ impl GoTrueClient {
         }
     }
 
-    pub fn reset_password_for_email(&self, email: &str) -> bool {
-        let result = self.api.reset_password_for_email(&email, None);
+    pub async fn reset_password_for_email(&self, email: &str) -> bool {
+        let result = self.api.reset_password_for_email(&email, None).await;
 
         match result {
             Ok(_) => return true,
