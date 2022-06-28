@@ -25,7 +25,7 @@ async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    let res = api.sign_up(&email, &password, None).await?;
+    let res = api.sign_up(&email, &password).await?;
 
     assert_eq!(res.user.email, email);
 
@@ -38,8 +38,8 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password, None).await?;
-    let res = api.sign_in(&email, &password, None).await?;
+    api.sign_up(&email, &password).await?;
+    let res = api.sign_in(&email, &password).await?;
 
     assert_eq!(res.user.email, email);
     Ok(())
@@ -51,8 +51,8 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password, None).await?;
-    let res = api.send_otp(&email, None, None).await?;
+    api.sign_up(&email, &password).await?;
+    let res = api.send_otp(&email, None).await?;
 
     assert_eq!(res, true);
 
@@ -63,7 +63,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
 async fn it_does_not_send_magic_link_with_invalid_email() -> Result<(), Box<dyn Error>> {
     let email = String::from("i-do-not-exist");
     let api = get_api_client();
-    let response = api.send_otp(&email, None, None).await;
+    let response = api.send_otp(&email, None).await;
 
     match response {
         Ok(_) => panic!("Should not work"),
@@ -79,8 +79,8 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password, None).await?;
-    let res = api.sign_in(&email, &password, None).await?;
+    api.sign_up(&email, &password).await?;
+    let res = api.sign_in(&email, &password).await?;
 
     assert_eq!(res.user.email, email);
 
@@ -97,8 +97,8 @@ async fn it_should_return_error_if_token_is_invalid() -> Result<(), Box<dyn Erro
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password, None).await?;
-    let res = api.sign_in(&email, &password, None).await?;
+    api.sign_up(&email, &password).await?;
+    let res = api.sign_in(&email, &password).await?;
 
     assert_eq!(res.user.email, email);
 
@@ -117,9 +117,9 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password, None).await?;
+    api.sign_up(&email, &password).await?;
 
-    let success = api.reset_password_for_email(&email, None).await?;
+    let success = api.reset_password_for_email(&email).await?;
     assert_eq!(success, true);
 
     Ok(())
@@ -131,7 +131,7 @@ async fn it_should_return_error_in_password_recovery_if_email_was_not_found(
     let email = get_random_email();
 
     let api = get_api_client();
-    let success = api.reset_password_for_email(&email, None).await;
+    let success = api.reset_password_for_email(&email).await;
     match success {
         Ok(_) => panic!("Should not work"),
         Err(_) => assert!(true),

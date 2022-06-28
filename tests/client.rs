@@ -59,7 +59,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
 async fn it_does_not_send_magic_link_with_invalid_email() -> Result<(), Box<dyn Error>> {
     let email = String::from("i-do-not-exist");
     let client = get_client();
-    let res = client.send_otp(&email, None, None).await;
+    let res = client.send_otp(&email, None).await;
 
     assert_eq!(res, false);
     Ok(())
@@ -71,8 +71,8 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password, None).await;
-    client.sign_in(&email, &password, None).await;
+    client.sign_up(&email, &password).await;
+    client.sign_in(&email, &password).await;
 
     let success = client.sign_out().await;
 
@@ -86,7 +86,7 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password, None).await;
+    client.sign_up(&email, &password).await;
     let res = client.reset_password_for_email(&email).await;
 
     assert_eq!(res, true);
