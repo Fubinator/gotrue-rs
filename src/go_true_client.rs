@@ -1,4 +1,7 @@
-use crate::{go_true_api::GoTrueApi, session::Session};
+use crate::{
+    go_true_api::GoTrueApi, session::Session, user_attributes::UserAttributes,
+    user_update::UserUpdate,
+};
 
 pub struct GoTrueClient {
     current_session: Option<Session>,
@@ -67,5 +70,16 @@ impl GoTrueClient {
             Ok(_) => return true,
             Err(_) => return false,
         }
+    }
+
+    pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, reqwest::Error> {
+        let session = match &self.current_session {
+            Some(s) => s,
+            None => panic!("Not logged in"),
+        };
+
+        let result = self.api.update_user(user, &session.access_token).await?;
+
+        return Ok(result);
     }
 }
