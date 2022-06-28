@@ -99,3 +99,27 @@ fn it_should_return_error_if_token_is_invalid() {
         Err(_) => assert!(true),
     }
 }
+
+#[test]
+fn it_should_send_password_recovery_email() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password, None).unwrap();
+
+    let success = api.reset_password_for_email(&email, None).unwrap();
+    assert_eq!(success, true);
+}
+
+#[test]
+fn it_should_return_error_in_password_recovery_if_email_was_not_found() {
+    let email = get_random_email();
+
+    let api = get_api_client();
+    let success = api.reset_password_for_email(&email, None);
+    match success {
+        Ok(_) => panic!("Should not work"),
+        Err(_) => assert!(true),
+    }
+}
