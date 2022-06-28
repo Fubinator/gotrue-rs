@@ -23,7 +23,7 @@ async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    let res = client.sign_up(&email, &password, None).await;
+    let res = client.sign_up(&email, &password).await;
 
     assert_eq!(res.user.email, email);
     Ok(())
@@ -35,8 +35,8 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password, None).await;
-    let res = client.sign_in(&email, &password, None).await;
+    client.sign_up(&email, &password).await;
+    let res = client.sign_in(&email, &password).await;
 
     assert_eq!(res.user.email, email);
     Ok(())
@@ -48,8 +48,8 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password, None).await;
-    let res = client.send_otp(&email, None, None).await;
+    client.sign_up(&email, &password).await;
+    let res = client.send_otp(&email, None).await;
 
     assert_eq!(res, true);
     Ok(())
