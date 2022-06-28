@@ -3,8 +3,26 @@ use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
 
+use hmac::{Hmac, Mac};
+use jwt::SignWithKey;
+use sha2::Sha256;
+use std::collections::BTreeMap;
+
 fn get_api_client() -> GoTrueApi {
     let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"));
+
+    return api;
+}
+
+fn get_service_api_client() -> GoTrueApi {
+    let key: Hmac<Sha256> = Hmac::new_from_slice(b"37c304f8-51aa-419a-a1af-06154e63707a").unwrap();
+    let mut claims = BTreeMap::new();
+    claims.insert("sub", "1234567890");
+    claims.insert("role", "supabase_admin");
+
+    let token_str = claims.sign_with_key(&key).unwrap();
+    let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"))
+        .insert_header("Authorization", format!("Bearer {token_str}"));
 
     return api;
 }
@@ -200,6 +218,17 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
     let update = api.update_user(attributes, &session.access_token).await?;
 
     assert_eq!(update.new_email, new_email);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_invite_user_by_email() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let api = get_service_api_client();
+    let user = api.invite_user_by_email(&email).await?;
+
+    assert_eq!(user.email, email);
 
     Ok(())
 }
