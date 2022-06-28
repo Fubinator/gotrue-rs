@@ -10,12 +10,12 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Send Magic Link Email
   - [x] Sign out
   - [ ] Verify OTP
-  - [ ] Invite User by Email
   - [x] Reset Password for Email
   - [x] Get Url for Provider
   - [x] Get User
   - [x] Update User
   - [x] Refresh Access Token
+  - [x] Invite User by Email
   - [ ] List Users (includes filtering, sorting, pagination)
   - [ ] Get User by Id
   - [ ] Create User
