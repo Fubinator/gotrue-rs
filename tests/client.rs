@@ -73,3 +73,25 @@ fn it_should_log_out() {
 
     assert_eq!(success, true);
 }
+
+#[test]
+fn it_should_send_password_recovery_email() {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    client.sign_up(&email, &password, None);
+    let res = client.reset_password_for_email(&email);
+
+    assert_eq!(res, true);
+}
+
+#[test]
+fn it_should_return_false_if_email_was_not_found_in_password_recovery() {
+    let email = get_random_email();
+
+    let client = get_client();
+    let res = client.reset_password_for_email(&email);
+
+    assert_eq!(res, false);
+}

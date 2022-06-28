@@ -144,4 +144,32 @@ impl GoTrueApi {
 
         return Ok(true);
     }
+
+    pub fn reset_password_for_email(
+        &self,
+        email: &str,
+        redirect_to: Option<String>,
+    ) -> Result<bool, reqwest::Error> {
+        let query_string = match redirect_to {
+            Some(query) => format!("?redirect_to={}", encode(&query)),
+            _ => String::from(""),
+        };
+
+        let endpoint = format!("{}/recover{}", self.url, query_string);
+
+        let body = json!({
+            "email": &email,
+        });
+
+        let client = reqwest::blocking::Client::new();
+        client
+            .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&body)
+            .send()
+            .unwrap()
+            .error_for_status()?;
+
+        return Ok(true);
+    }
 }

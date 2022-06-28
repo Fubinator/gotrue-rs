@@ -74,4 +74,13 @@ impl GoTrueClient {
             Err(_) => return false,
         }
     }
+
+    pub fn reset_password_for_email(&self, email: &str) -> bool {
+        let result = self.api.reset_password_for_email(&email, None);
+
+        match result {
+            Ok(_) => return true,
+            Err(_) => return false,
+        }
+    }
 }
