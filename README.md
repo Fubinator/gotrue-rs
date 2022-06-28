@@ -12,7 +12,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [ ] Verify OTP
   - [ ] Invite User by Email
   - [x] Reset Password for Email
-  - [ ] Get Url for Provider
+  - [x] Get Url for Provider
   - [ ] Get User
   - [ ] Update User
   - [ ] Refresh Access Token

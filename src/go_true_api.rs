@@ -145,4 +145,8 @@ impl GoTrueApi {
 
         return Ok(true);
     }
+
+    pub fn get_url_for_provider(&self, provider: &str) -> String {
+        return format!("{}/authorize?provider={}", self.url, provider);
+    }
 }

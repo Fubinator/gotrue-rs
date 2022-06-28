@@ -3,7 +3,7 @@ use rand::{distributions::Alphanumeric, Rng};
 use std::error::Error;
 
 fn get_api_client() -> GoTrueApi {
-    let api: GoTrueApi = GoTrueApi::new("http://localhost:9998".to_string());
+    let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"));
 
     return api;
 }
@@ -138,4 +138,12 @@ async fn it_should_return_error_in_password_recovery_if_email_was_not_found(
     }
 
     Ok(())
+}
+
+#[test]
+fn it_should_return_url_for_provider() {
+    let api = get_api_client();
+    let url = api.get_url_for_provider("Github");
+
+    assert!(url.ends_with("/authorize?provider=Github"));
 }
