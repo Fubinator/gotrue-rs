@@ -1,7 +1,7 @@
 use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
 
-use crate::session::Session;
+use crate::{session::Session, user::User};
 
 pub struct GoTrueApi {
     url: String,
@@ -169,5 +169,28 @@ impl GoTrueApi {
             .await?;
 
         return Ok(session);
+    }
+
+    pub async fn get_user(&self, jwt: &str) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/user", self.url);
+
+        let client = reqwest::Client::new();
+        let mut headers: HeaderMap = self.headers.clone();
+        let bearer = format!("Bearer {jwt}");
+        headers.insert(
+            "Authorization",
+            HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
+        );
+
+        let user: User = client
+            .get(endpoint)
+            .headers(headers)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        return Ok(user);
     }
 }

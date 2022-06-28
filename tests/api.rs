@@ -163,3 +163,19 @@ async fn it_should_refresh_token() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn it_should_return_user() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password).await?;
+    let session = api.sign_in(&email, &password).await?;
+
+    let user = api.get_user(&session.access_token).await?;
+
+    assert_eq!(user.email, email);
+
+    Ok(())
+}
