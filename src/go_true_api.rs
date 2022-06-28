@@ -1,6 +1,5 @@
 use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
-use urlencoding::encode;
 
 use crate::session::Session;
 
@@ -33,14 +32,8 @@ impl GoTrueApi {
         &self,
         email: &String,
         password: &String,
-        redirect_to: Option<String>,
     ) -> Result<Session, reqwest::Error> {
-        let query_string = match redirect_to {
-            Some(query) => format!("?redirect_to={}", encode(&query)),
-            _ => String::from(""),
-        };
-
-        let endpoint = format!("{}/signup{}", self.url, query_string);
+        let endpoint = format!("{}/signup", self.url);
 
         let body = json!({
             "email": &email,
@@ -65,12 +58,8 @@ impl GoTrueApi {
         &self,
         email: &String,
         password: &String,
-        redirect_to: Option<String>,
     ) -> Result<Session, reqwest::Error> {
-        let query_string = match redirect_to {
-            Some(query) => format!("?grant_type=password&redirect_to={}", encode(&query)),
-            _ => String::from("?grant_type=password"),
-        };
+        let query_string = String::from("?grant_type=password");
 
         let endpoint = format!("{}/token{}", self.url, query_string);
 
@@ -97,14 +86,8 @@ impl GoTrueApi {
         &self,
         email: &str,
         should_create_user: Option<bool>,
-        redirect_to: Option<String>,
     ) -> Result<bool, reqwest::Error> {
-        let query_string = match redirect_to {
-            Some(query) => format!("?redirect_to={}", encode(&query)),
-            _ => String::from(""),
-        };
-
-        let endpoint = format!("{}/otp{}", self.url, query_string);
+        let endpoint = format!("{}/otp", self.url);
 
         let body = json!({
             "email": &email,
@@ -144,17 +127,8 @@ impl GoTrueApi {
         return Ok(true);
     }
 
-    pub async fn reset_password_for_email(
-        &self,
-        email: &str,
-        redirect_to: Option<String>,
-    ) -> Result<bool, reqwest::Error> {
-        let query_string = match redirect_to {
-            Some(query) => format!("?redirect_to={}", encode(&query)),
-            _ => String::from(""),
-        };
-
-        let endpoint = format!("{}/recover{}", self.url, query_string);
+    pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, reqwest::Error> {
+        let endpoint = format!("{}/recover", self.url);
 
         let body = json!({
             "email": &email,
