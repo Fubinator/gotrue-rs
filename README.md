@@ -15,12 +15,11 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Get Url for Provider
   - [ ] Get User
   - [ ] Update User
-  - [ ] Refresh Access Token
+  - [x] Refresh Access Token
   - [ ] List Users (includes filtering, sorting, pagination)
   - [ ] Get User by Id
   - [ ] Create User
   - [ ] Update User by Id
-  - [ ] Get User
   - [ ] Refresh Session
   - [ ] Auth State Change Handler
   - [ ] Provider Sign In (Provides URL)
