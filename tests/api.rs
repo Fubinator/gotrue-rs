@@ -147,3 +147,19 @@ fn it_should_return_url_for_provider() {
 
     assert!(url.ends_with("/authorize?provider=Github"));
 }
+
+#[tokio::test]
+async fn it_should_refresh_token() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password).await?;
+    let session = api.sign_in(&email, &password).await?;
+
+    let new_session = api.refresh_access_token(&session.refresh_token).await?;
+
+    assert_eq!(new_session.user.email, email);
+
+    Ok(())
+}
