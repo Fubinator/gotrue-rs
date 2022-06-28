@@ -1,5 +1,6 @@
-use go_true::go_true_api::GoTrueApi;
+use go_true::{go_true_api::GoTrueApi, user_attributes::UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
+use serde_json::json;
 use std::error::Error;
 
 fn get_api_client() -> GoTrueApi {
@@ -176,6 +177,29 @@ async fn it_should_return_user() -> Result<(), Box<dyn Error>> {
     let user = api.get_user(&session.access_token).await?;
 
     assert_eq!(user.email, email);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let api = get_api_client();
+    api.sign_up(&email, &password).await?;
+    let session = api.sign_in(&email, &password).await?;
+
+    let new_email = get_random_email();
+    let attributes = UserAttributes {
+        email: new_email.clone(),
+        password: "Abcd12345!".to_string(),
+        data: json!({ "test": "test" }),
+    };
+
+    let update = api.update_user(attributes, &session.access_token).await?;
+
+    assert_eq!(update.new_email, new_email);
 
     Ok(())
 }
