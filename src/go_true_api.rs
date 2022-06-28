@@ -225,4 +225,25 @@ impl GoTrueApi {
 
         return Ok(user);
     }
+
+    pub async fn invite_user_by_email(&self, email: &str) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/invite", self.url);
+
+        let body = json!({
+            "email": &email,
+        });
+
+        let client = reqwest::Client::new();
+        let user: User = client
+            .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&body)
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<User>()
+            .await?;
+
+        return Ok(user);
+    }
 }
