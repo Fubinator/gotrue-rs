@@ -13,7 +13,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [ ] Invite User by Email
   - [x] Reset Password for Email
   - [x] Get Url for Provider
-  - [ ] Get User
+  - [x] Get User
   - [ ] Update User
   - [x] Refresh Access Token
   - [ ] List Users (includes filtering, sorting, pagination)
