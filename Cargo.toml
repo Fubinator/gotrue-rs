@@ -13,3 +13,4 @@ urlencoding = "2.1.0"
 
 [dev-dependencies]
 rand = "*"
+tokio = { version = "1.19.2", features = ["macros"] }

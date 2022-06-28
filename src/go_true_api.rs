@@ -29,7 +29,7 @@ impl GoTrueApi {
         self
     }
 
-    pub fn sign_up(
+    pub async fn sign_up(
         &self,
         email: &String,
         password: &String,
@@ -47,21 +47,21 @@ impl GoTrueApi {
             "password": &password,
         });
 
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::Client::new();
         let response: Session = client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
             .send()
-            .unwrap()
+            .await?
             .error_for_status()?
-            .json()
-            .unwrap();
+            .json::<Session>()
+            .await?;
 
         return Ok(response);
     }
 
-    pub fn sign_in(
+    pub async fn sign_in(
         &self,
         email: &String,
         password: &String,
@@ -79,22 +79,21 @@ impl GoTrueApi {
             "password": &password,
         });
 
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::Client::new();
         let response: Session = client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
             .send()
-            .unwrap()
+            .await?
             .error_for_status()?
-            .json()
-            .unwrap();
+            .json::<Session>()
+            .await?;
 
         return Ok(response);
     }
 
-    // This works for magic links and phone otps
-    pub fn send_otp(
+    pub async fn send_otp(
         &self,
         email: &str,
         should_create_user: Option<bool>,
@@ -112,22 +111,22 @@ impl GoTrueApi {
             "should_create_user": Some(should_create_user)
         });
 
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::Client::new();
         client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
             .send()
-            .unwrap()
+            .await?
             .error_for_status()?;
 
         return Ok(true);
     }
 
-    pub fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
+    pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
 
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::Client::new();
         let mut headers: HeaderMap = self.headers.clone();
         let bearer = format!("Bearer {access_token}");
         headers.insert(
@@ -139,13 +138,13 @@ impl GoTrueApi {
             .post(endpoint)
             .headers(headers)
             .send()
-            .unwrap()
+            .await?
             .error_for_status()?;
 
         return Ok(true);
     }
 
-    pub fn reset_password_for_email(
+    pub async fn reset_password_for_email(
         &self,
         email: &str,
         redirect_to: Option<String>,
@@ -161,13 +160,13 @@ impl GoTrueApi {
             "email": &email,
         });
 
-        let client = reqwest::blocking::Client::new();
+        let client = reqwest::Client::new();
         client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
             .send()
-            .unwrap()
+            .await?
             .error_for_status()?;
 
         return Ok(true);
