@@ -149,4 +149,25 @@ impl GoTrueApi {
     pub fn get_url_for_provider(&self, provider: &str) -> String {
         return format!("{}/authorize?provider={}", self.url, provider);
     }
+
+    pub async fn refresh_access_token(
+        &self,
+        refresh_token: &str,
+    ) -> Result<Session, reqwest::Error> {
+        let endpoint = format!("{}/token?grant_type=refresh_token", self.url);
+        let body = json!({ "refresh_token": refresh_token });
+
+        let client = reqwest::Client::new();
+        let session: Session = client
+            .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&body)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        return Ok(session);
+    }
 }
