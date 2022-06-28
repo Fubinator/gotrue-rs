@@ -1,5 +1,6 @@
-use go_true::go_true_client::GoTrueClient;
+use go_true::{go_true_client::GoTrueClient, user_attributes::UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
+use serde_json::json;
 use std::error::Error;
 
 fn get_client() -> GoTrueClient {
@@ -102,5 +103,28 @@ async fn it_should_return_false_if_email_was_not_found_in_password_recovery(
     let res = client.reset_password_for_email(&email).await;
 
     assert_eq!(res, false);
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    client.sign_up(&email, &password).await;
+    client.sign_in(&email, &password).await;
+
+    let new_email = get_random_email();
+    let attributes = UserAttributes {
+        email: new_email.clone(),
+        password: "Abcd12345!".to_string(),
+        data: json!({ "test": "test" }),
+    };
+
+    let update = client.update_user(attributes).await?;
+
+    assert_eq!(update.new_email, new_email);
+
     Ok(())
 }

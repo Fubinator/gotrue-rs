@@ -1,7 +1,9 @@
 use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
 
-use crate::{session::Session, user::User};
+use crate::{
+    session::Session, user::User, user_attributes::UserAttributes, user_update::UserUpdate,
+};
 
 pub struct GoTrueApi {
     url: String,
@@ -174,7 +176,6 @@ impl GoTrueApi {
     pub async fn get_user(&self, jwt: &str) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/user", self.url);
 
-        let client = reqwest::Client::new();
         let mut headers: HeaderMap = self.headers.clone();
         let bearer = format!("Bearer {jwt}");
         headers.insert(
@@ -182,6 +183,7 @@ impl GoTrueApi {
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
         );
 
+        let client = reqwest::Client::new();
         let user: User = client
             .get(endpoint)
             .headers(headers)
@@ -189,6 +191,36 @@ impl GoTrueApi {
             .await?
             .error_for_status()?
             .json()
+            .await?;
+
+        return Ok(user);
+    }
+
+    pub async fn update_user(
+        &self,
+        user: UserAttributes,
+        jwt: &str,
+    ) -> Result<UserUpdate, reqwest::Error> {
+        let endpoint = format!("{}/user", self.url);
+
+        let mut headers: HeaderMap = self.headers.clone();
+        let bearer = format!("Bearer {jwt}");
+        headers.insert(
+            "Authorization",
+            HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
+        );
+
+        let body = json!({"email": user.email, "password": user.password, "data": user.data});
+
+        let client = reqwest::Client::new();
+        let user: UserUpdate = client
+            .put(endpoint)
+            .headers(headers)
+            .json(&body)
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<UserUpdate>()
             .await?;
 
         return Ok(user);
