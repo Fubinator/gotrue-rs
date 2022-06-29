@@ -269,4 +269,20 @@ impl GoTrueApi {
 
         return Ok(users);
     }
+
+    pub async fn get_user_by_id(&self, user_id: &str) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/admin/users/{}", self.url, user_id);
+
+        let client = reqwest::Client::new();
+        let user: User = client
+            .get(endpoint)
+            .headers(self.headers.clone())
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        return Ok(user);
+    }
 }
