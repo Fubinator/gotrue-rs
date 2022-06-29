@@ -1,4 +1,7 @@
-use go_true::{go_true_api::GoTrueApi, user_attributes::UserAttributes};
+use go_true::{
+    admin_user_attributes::AdminUserAttributes, go_true_api::GoTrueApi,
+    user_attributes::UserAttributes,
+};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
@@ -259,6 +262,25 @@ async fn it_should_get_user_by_id() -> Result<(), Box<dyn Error>> {
     let user = api.get_user_by_id(&session.user.id).await?;
 
     assert_eq!(user.email, email);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_create_user() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let api = get_service_api_client();
+    let user = AdminUserAttributes {
+        email: email.clone(),
+        password: String::from("Abcd1234!"),
+        data: serde_json::Value::Null,
+        email_confirmed: None,
+        phone_confirmed: None,
+    };
+
+    let response = api.create_user(user).await?;
+
+    assert_eq!(response.email, email);
 
     Ok(())
 }
