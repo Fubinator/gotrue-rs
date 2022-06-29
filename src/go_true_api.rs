@@ -2,8 +2,8 @@ use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
 
 use crate::{
-    session::Session, user::User, user_attributes::UserAttributes, user_list::UserList,
-    user_update::UserUpdate,
+    admin_user_attributes::AdminUserAttributes, session::Session, user::User,
+    user_attributes::UserAttributes, user_list::UserList, user_update::UserUpdate,
 };
 
 pub struct GoTrueApi {
@@ -277,6 +277,25 @@ impl GoTrueApi {
         let user: User = client
             .get(endpoint)
             .headers(self.headers.clone())
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        return Ok(user);
+    }
+
+    pub async fn create_user(&self, user: AdminUserAttributes) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/admin/users", self.url);
+
+        let json = serde_json::to_value(&user).unwrap();
+
+        let client = reqwest::Client::new();
+        let user: User = client
+            .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&json)
             .send()
             .await?
             .error_for_status()?
