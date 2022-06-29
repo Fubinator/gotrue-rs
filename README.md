@@ -16,7 +16,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Update User
   - [x] Refresh Access Token
   - [x] Invite User by Email
-  - [ ] List Users (includes filtering, sorting, pagination)
+  - [x] List Users (includes filtering, sorting, pagination)
   - [ ] Get User by Id
   - [ ] Create User
   - [ ] Update User by Id

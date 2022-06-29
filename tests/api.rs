@@ -232,3 +232,18 @@ async fn it_should_invite_user_by_email() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn it_should_list_users() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+    let client_api = get_api_client();
+    client_api.sign_up(&email, &password).await?;
+
+    let api = get_service_api_client();
+    let users = api.list_users(None).await?;
+
+    assert_eq!(users.users.is_empty(), false);
+
+    Ok(())
+}
