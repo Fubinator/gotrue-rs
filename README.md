@@ -20,7 +20,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Invite User by Email
   - [x] List Users (includes filtering, sorting, pagination)
   - [x] Get User by Id
-  - [ ] Create User
+  - [x] Create User
   - [ ] Update User by Id
   - [ ] Refresh Session
   - [ ] Auth State Change Handler
