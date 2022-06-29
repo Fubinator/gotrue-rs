@@ -247,3 +247,18 @@ async fn it_should_list_users() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn it_should_get_user_by_id() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+    let client_api = get_api_client();
+    let session = client_api.sign_up(&email, &password).await?;
+
+    let api = get_service_api_client();
+    let user = api.get_user_by_id(&session.user.id).await?;
+
+    assert_eq!(user.email, email);
+
+    Ok(())
+}
