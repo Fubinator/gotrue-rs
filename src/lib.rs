@@ -1,3 +1,4 @@
+pub mod admin_user_attributes;
 mod session;
 mod user;
 pub mod user_attributes;
