@@ -1,3 +1,5 @@
+[![Rust](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml)
+
 ## Getting Started
 
 This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. Currently WIP (see the Status section for the current progress).
