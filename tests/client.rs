@@ -1,4 +1,4 @@
-use go_true::{go_true_client::GoTrueClient, user_attributes::UserAttributes};
+use go_true::{GoTrueClient, UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
