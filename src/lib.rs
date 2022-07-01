@@ -1,9 +1,11 @@
-pub mod admin_user_attributes;
+mod go_true_api;
+mod go_true_client;
 mod session;
 mod user;
-pub mod user_attributes;
+mod user_attributes;
 mod user_list;
 mod user_update;
 
-pub mod go_true_api;
-pub mod go_true_client;
+pub use go_true_api::GoTrueApi;
+pub use go_true_client::GoTrueClient;
+pub use user_attributes::UserAttributes;

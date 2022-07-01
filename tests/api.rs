@@ -1,7 +1,4 @@
-use go_true::{
-    admin_user_attributes::AdminUserAttributes, go_true_api::GoTrueApi,
-    user_attributes::UserAttributes,
-};
+use go_true::{GoTrueApi, UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
@@ -10,6 +7,18 @@ use hmac::{Hmac, Mac};
 use jwt::SignWithKey;
 use sha2::Sha256;
 use std::collections::BTreeMap;
+
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+struct AdminUserAttributes {
+    pub email: String,
+    pub password: Option<String>,
+    pub data: Option<Value>,
+    pub email_confirmed: Option<bool>,
+    pub phone_confirmed: Option<bool>,
+}
 
 fn get_api_client() -> GoTrueApi {
     let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"));
