@@ -326,4 +326,17 @@ impl GoTrueApi {
 
         return Ok(user);
     }
+
+    pub async fn delete_user(&self, user_id: &str) -> Result<bool, reqwest::Error> {
+        let endpoint = format!("{}/admin/users/{}", self.url, user_id);
+
+        self.client
+            .delete(endpoint)
+            .headers(self.headers.clone())
+            .send()
+            .await?
+            .error_for_status()?;
+
+        return Ok(true);
+    }
 }
