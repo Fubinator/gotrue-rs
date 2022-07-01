@@ -318,3 +318,33 @@ async fn it_should_update_user_by_id() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn it_should_delete_user() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let api = get_service_api_client();
+    let user = AdminUserAttributes {
+        email: email.clone(),
+        password: Some(String::from("Abcd1234!")),
+        data: Some(serde_json::Value::Null),
+        email_confirmed: None,
+        phone_confirmed: None,
+    };
+
+    let create_response = api.create_user(user).await?;
+    assert_eq!(create_response.email, email);
+
+    let old_user_list = api.list_users(None).await?;
+
+    api.delete_user(&create_response.id).await?;
+    assert_eq!(
+        old_user_list.users.iter().any(|user| user.email == email),
+        true
+    );
+
+    let userlist = api.list_users(None).await?;
+
+    assert_eq!(userlist.users.iter().any(|user| user.email == email), false);
+
+    Ok(())
+}
