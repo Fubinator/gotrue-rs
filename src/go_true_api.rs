@@ -2,8 +2,8 @@ use reqwest::header::{HeaderMap, HeaderValue, IntoHeaderName};
 use serde_json::json;
 
 use crate::{
-    admin_user_attributes::AdminUserAttributes, session::Session, user::User,
-    user_attributes::UserAttributes, user_list::UserList, user_update::UserUpdate,
+    session::Session, user::User, user_attributes::UserAttributes, user_list::UserList,
+    user_update::UserUpdate,
 };
 
 pub struct GoTrueApi {
