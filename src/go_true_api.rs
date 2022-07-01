@@ -9,6 +9,7 @@ use crate::{
 pub struct GoTrueApi {
     url: String,
     headers: HeaderMap,
+    client: reqwest::Client,
 }
 
 impl GoTrueApi {
@@ -16,6 +17,7 @@ impl GoTrueApi {
         GoTrueApi {
             url,
             headers: HeaderMap::new(),
+            client: reqwest::Client::new(),
         }
     }
 
@@ -43,8 +45,8 @@ impl GoTrueApi {
             "password": &password,
         });
 
-        let client = reqwest::Client::new();
-        let response: Session = client
+        let response: Session = self
+            .client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -71,8 +73,8 @@ impl GoTrueApi {
             "password": &password,
         });
 
-        let client = reqwest::Client::new();
-        let response: Session = client
+        let response: Session = self
+            .client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -97,8 +99,7 @@ impl GoTrueApi {
             "should_create_user": Some(should_create_user)
         });
 
-        let client = reqwest::Client::new();
-        client
+        self.client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -112,7 +113,6 @@ impl GoTrueApi {
     pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
 
-        let client = reqwest::Client::new();
         let mut headers: HeaderMap = self.headers.clone();
         let bearer = format!("Bearer {access_token}");
         headers.insert(
@@ -120,7 +120,7 @@ impl GoTrueApi {
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
         );
 
-        client
+        self.client
             .post(endpoint)
             .headers(headers)
             .send()
@@ -137,8 +137,7 @@ impl GoTrueApi {
             "email": &email,
         });
 
-        let client = reqwest::Client::new();
-        client
+        self.client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -160,8 +159,8 @@ impl GoTrueApi {
         let endpoint = format!("{}/token?grant_type=refresh_token", self.url);
         let body = json!({ "refresh_token": refresh_token });
 
-        let client = reqwest::Client::new();
-        let session: Session = client
+        let session: Session = self
+            .client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -184,8 +183,8 @@ impl GoTrueApi {
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
         );
 
-        let client = reqwest::Client::new();
-        let user: User = client
+        let user: User = self
+            .client
             .get(endpoint)
             .headers(headers)
             .send()
@@ -213,8 +212,8 @@ impl GoTrueApi {
 
         let body = json!({"email": user.email, "password": user.password, "data": user.data});
 
-        let client = reqwest::Client::new();
-        let user: UserUpdate = client
+        let user: UserUpdate = self
+            .client
             .put(endpoint)
             .headers(headers)
             .json(&body)
@@ -234,8 +233,8 @@ impl GoTrueApi {
             "email": &email,
         });
 
-        let client = reqwest::Client::new();
-        let user: User = client
+        let user: User = self
+            .client
             .post(endpoint)
             .headers(self.headers.clone())
             .json(&body)
@@ -257,8 +256,8 @@ impl GoTrueApi {
             None => format!("{}/admin/users", self.url),
         };
 
-        let client = reqwest::Client::new();
-        let users: UserList = client
+        let users: UserList = self
+            .client
             .get(endpoint)
             .headers(self.headers.clone())
             .send()
@@ -273,8 +272,8 @@ impl GoTrueApi {
     pub async fn get_user_by_id(&self, user_id: &str) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/admin/users/{}", self.url, user_id);
 
-        let client = reqwest::Client::new();
-        let user: User = client
+        let user: User = self
+            .client
             .get(endpoint)
             .headers(self.headers.clone())
             .send()
