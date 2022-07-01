@@ -272,8 +272,8 @@ async fn it_should_create_user() -> Result<(), Box<dyn Error>> {
     let api = get_service_api_client();
     let user = AdminUserAttributes {
         email: email.clone(),
-        password: String::from("Abcd1234!"),
-        data: serde_json::Value::Null,
+        password: Some(String::from("Abcd1234!")),
+        data: None,
         email_confirmed: None,
         phone_confirmed: None,
     };
@@ -281,6 +281,40 @@ async fn it_should_create_user() -> Result<(), Box<dyn Error>> {
     let response = api.create_user(user).await?;
 
     assert_eq!(response.email, email);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_update_user_by_id() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let api = get_service_api_client();
+    let user = AdminUserAttributes {
+        email: email.clone(),
+        password: Some(String::from("Abcd1234!")),
+        data: Some(serde_json::Value::Null),
+        email_confirmed: None,
+        phone_confirmed: None,
+    };
+
+    let create_response = api.create_user(user).await?;
+    assert_eq!(create_response.email, email);
+
+    let new_email = get_random_email();
+
+    let user = AdminUserAttributes {
+        email: new_email.clone(),
+        password: None,
+        data: None,
+        email_confirmed: None,
+        phone_confirmed: None,
+    };
+
+    let update_response = api
+        .update_user_by_id(&create_response.id, user.clone())
+        .await?;
+
+    assert_eq!(update_response.email, new_email);
 
     Ok(())
 }
