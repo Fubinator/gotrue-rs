@@ -285,7 +285,7 @@ impl GoTrueApi {
         return Ok(user);
     }
 
-    pub async fn create_user(&self, user: AdminUserAttributes) -> Result<User, reqwest::Error> {
+    pub async fn create_user<T: serde::Serialize>(&self, user: T) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/admin/users", self.url);
 
         let json = serde_json::to_value(&user).unwrap();
@@ -293,6 +293,29 @@ impl GoTrueApi {
         let client = reqwest::Client::new();
         let user: User = client
             .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&json)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        return Ok(user);
+    }
+
+    pub async fn update_user_by_id<T: serde::Serialize>(
+        &self,
+        id: &str,
+        user: T,
+    ) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/admin/users/{}", self.url, id);
+
+        let json = serde_json::to_value(&user).unwrap();
+
+        let client = reqwest::Client::new();
+        let user: User = client
+            .put(endpoint)
             .headers(self.headers.clone())
             .json(&json)
             .send()
