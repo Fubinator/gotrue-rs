@@ -1,6 +1,6 @@
 [package]
 name = "go_true"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Fabian Kutsche <kutschefabian@gmail.com>"]
 description = "GoTrue client written in rust"

@@ -1,34 +1,19 @@
 [![Rust](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml)
+[![Crate](https://img.shields.io/crates/v/go_true.svg)](https://crates.io/crates/go_true)
+[![License: MIT](https://img.shields.io/crates/l/go_true.svg)](#license)
 
-## Getting Started
+This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. The library is currently under development. Most of the features are already built in, but there are still some changes to be made and everything still needs to be documented. 
 
-This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. Currently WIP (see the Status section for the current progress).
+## Usage
+Add the following line to your `Cargo.toml`:
 
-## Status
+```toml
+go_true = "0.1.0"
+```
 
-- [ ] Functionality
-  - [x] Sign Up with Email/Phone
-  - [x] Sign In with Email/Phone
-  - [x] Send Magic Link Email
-  - [x] Sign out
-  - [x] Verify OTP
-  - [x] Reset Password for Email
-  - [x] Get Url for Provider
-  - [x] Get User
-  - [x] Update User
-  - [x] Refresh Access Token
-  - [x] Invite User by Email
-  - [x] List Users (includes filtering, sorting, pagination)
-  - [x] Get User by Id
-  - [x] Create User
-  - [x] Update User by Id
-  - [x] Delete User
-  - [x] Refresh Session
-  - [ ] Auth State Change Handler
-  - [ ] Provider Sign In (Provides URL)
-- [ ] Documentation
-- [x] Unit Tests
-- [x] Release (crates.io)
+## Examples
+
+WIP
 
 ## Testing
 
@@ -47,4 +32,4 @@ cargo test
 
 ## Contributing
 
-We are more than happy to have contributions! Please submit a PR.
+Contributions, issues and feature requests are welcome. Feel free to check out the [issues page](https://github.com/Fubinator/gotrue-rs/issues) if you want to contribute.
