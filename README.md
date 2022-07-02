@@ -28,7 +28,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [ ] Provider Sign In (Provides URL)
 - [ ] Documentation
 - [x] Unit Tests
-- [ ] Cargo Release
+- [x] Release (crates.io)
 
 ## Testing
 
