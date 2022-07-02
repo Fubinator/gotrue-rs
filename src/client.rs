@@ -1,4 +1,9 @@
-use crate::{api::Api, session::Session, user_attributes::UserAttributes, user_update::UserUpdate};
+use crate::{
+    api::{Api, EmailOrPhone},
+    session::Session,
+    user_attributes::UserAttributes,
+    user_update::UserUpdate,
+};
 
 pub struct Client {
     current_session: Option<Session>,
@@ -39,8 +44,21 @@ impl Client {
         }
     }
 
-    pub async fn send_otp(&self, email: &str, should_create_user: Option<bool>) -> bool {
-        let result = self.api.send_otp(&email, should_create_user).await;
+    pub async fn send_otp(
+        &self,
+        email_or_phone: EmailOrPhone,
+        should_create_user: Option<bool>,
+    ) -> bool {
+        let result = self.api.send_otp(email_or_phone, should_create_user).await;
+
+        match result {
+            Ok(_) => return true,
+            Err(_) => return false,
+        }
+    }
+
+    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> bool {
+        let result = self.api.verify_otp(params).await;
 
         match result {
             Ok(_) => return true,

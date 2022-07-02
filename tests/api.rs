@@ -1,4 +1,4 @@
-use go_true::{Api, UserAttributes};
+use go_true::{Api, EmailOrPhone, UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
@@ -83,7 +83,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
 
     let api = get_api_client();
     api.sign_up(&email, &password).await?;
-    let res = api.send_otp(&email, None).await?;
+    let res = api.send_otp(EmailOrPhone::Email(email), None).await?;
 
     assert_eq!(res, true);
 
@@ -94,7 +94,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
 async fn it_does_not_send_magic_link_with_invalid_email() -> Result<(), Box<dyn Error>> {
     let email = String::from("i-do-not-exist");
     let api = get_api_client();
-    let response = api.send_otp(&email, None).await;
+    let response = api.send_otp(EmailOrPhone::Email(email), None).await;
 
     match response {
         Ok(_) => panic!("Should not work"),
