@@ -12,6 +12,11 @@ pub struct Api {
     client: reqwest::Client,
 }
 
+pub enum EmailOrPhone {
+    Email(String),
+    Phone(String),
+}
+
 impl Api {
     pub fn new(url: String) -> Api {
         Api {
@@ -89,15 +94,37 @@ impl Api {
 
     pub async fn send_otp(
         &self,
-        email: &str,
+        email_or_phone: EmailOrPhone,
         should_create_user: Option<bool>,
     ) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/otp", self.url);
 
-        let body = json!({
-            "email": &email,
-            "should_create_user": Some(should_create_user)
-        });
+        let body = match email_or_phone {
+            EmailOrPhone::Email(email) => json!({
+                "email": email,
+                "should_create_user": Some(should_create_user)
+            }),
+            EmailOrPhone::Phone(phone) => json!({
+                "phone": phone,
+                "should_create_user": Some(should_create_user)
+            }),
+        };
+
+        self.client
+            .post(endpoint)
+            .headers(self.headers.clone())
+            .json(&body)
+            .send()
+            .await?
+            .error_for_status()?;
+
+        return Ok(true);
+    }
+
+    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, reqwest::Error> {
+        let endpoint = format!("{}/otp", self.url);
+
+        let body = serde_json::to_value(&params).unwrap();
 
         self.client
             .post(endpoint)
