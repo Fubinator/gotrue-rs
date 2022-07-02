@@ -1,4 +1,4 @@
-use go_true::{GoTrueApi, UserAttributes};
+use go_true::{Api, UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
@@ -20,20 +20,20 @@ struct AdminUserAttributes {
     pub phone_confirmed: Option<bool>,
 }
 
-fn get_api_client() -> GoTrueApi {
-    let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"));
+fn get_api_client() -> Api {
+    let api: Api = Api::new(String::from("http://localhost:9998"));
 
     return api;
 }
 
-fn get_service_api_client() -> GoTrueApi {
+fn get_service_api_client() -> Api {
     let key: Hmac<Sha256> = Hmac::new_from_slice(b"37c304f8-51aa-419a-a1af-06154e63707a").unwrap();
     let mut claims = BTreeMap::new();
     claims.insert("sub", "1234567890");
     claims.insert("role", "supabase_admin");
 
     let token_str = claims.sign_with_key(&key).unwrap();
-    let api: GoTrueApi = GoTrueApi::new(String::from("http://localhost:9998"))
+    let api: Api = Api::new(String::from("http://localhost:9998"))
         .insert_header("Authorization", format!("Bearer {token_str}"));
 
     return api;

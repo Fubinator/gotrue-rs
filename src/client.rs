@@ -1,20 +1,17 @@
-use crate::{
-    go_true_api::GoTrueApi, session::Session, user_attributes::UserAttributes,
-    user_update::UserUpdate,
-};
+use crate::{api::Api, session::Session, user_attributes::UserAttributes, user_update::UserUpdate};
 
-pub struct GoTrueClient {
+pub struct Client {
     current_session: Option<Session>,
     auto_refresh_token: bool,
-    api: GoTrueApi,
+    api: Api,
 }
 
-impl GoTrueClient {
-    pub fn new(url: String) -> GoTrueClient {
-        GoTrueClient {
+impl Client {
+    pub fn new(url: String) -> Client {
+        Client {
             auto_refresh_token: true,
             current_session: None,
-            api: GoTrueApi::new(url),
+            api: Api::new(url),
         }
     }
 
