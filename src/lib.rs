@@ -7,5 +7,6 @@ mod user_list;
 mod user_update;
 
 pub use api::Api;
+pub use api::EmailOrPhone;
 pub use client::Client;
 pub use user_attributes::UserAttributes;
