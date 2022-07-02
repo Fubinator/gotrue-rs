@@ -1,5 +1,6 @@
 mod api;
 mod client;
+pub mod error;
 mod session;
 mod user;
 mod user_attributes;

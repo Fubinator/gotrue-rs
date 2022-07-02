@@ -1,5 +1,6 @@
 use crate::{
     api::{Api, EmailOrPhone},
+    error::Error,
     session::Session,
     user_attributes::UserAttributes,
     user_update::UserUpdate,
@@ -96,5 +97,25 @@ impl Client {
         let result = self.api.update_user(user, &session.access_token).await?;
 
         return Ok(result);
+    }
+
+    pub async fn refresh_session(&mut self) -> Result<Session, Error> {
+        if self.current_session.is_none() {
+            return Err(Error::NotAuthenticated);
+        }
+
+        let result = match &self.current_session {
+            Some(session) => self.api.refresh_access_token(&session.refresh_token).await,
+            None => return Err(Error::MissingRefreshToken),
+        };
+
+        let session = match result {
+            Ok(session) => session,
+            Err(_) => return Err(Error::InternalError),
+        };
+
+        self.current_session = Some(session.clone());
+
+        return Ok(session);
     }
 }

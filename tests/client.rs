@@ -44,6 +44,36 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
 }
 
 #[tokio::test]
+async fn it_should_return_error_if_no_session_when_refreshing() -> Result<(), Box<dyn Error>> {
+    let mut client = get_client();
+    let result = client.refresh_session().await;
+
+    match result {
+        Ok(_) => panic!("Should throw error"),
+        Err(e) => assert!(matches!(e, go_true::error::Error::NotAuthenticated)),
+    }
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_refresh_session() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    client.sign_up(&email, &password).await;
+    let old_session = client.sign_in(&email, &password).await;
+
+    let session = client.refresh_session().await?;
+
+    assert_eq!(session.user.email, email);
+    assert_ne!(old_session.refresh_token, session.refresh_token);
+
+    Ok(())
+}
+
+#[tokio::test]
 async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
