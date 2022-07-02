@@ -1,10 +1,10 @@
-use go_true::{GoTrueClient, UserAttributes};
+use go_true::{Client, UserAttributes};
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::json;
 use std::error::Error;
 
-fn get_client() -> GoTrueClient {
-    return GoTrueClient::new("http://localhost:9998".to_string());
+fn get_client() -> Client {
+    return Client::new("http://localhost:9998".to_string());
 }
 
 fn get_random_email() -> String {

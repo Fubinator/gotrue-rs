@@ -6,15 +6,15 @@ use crate::{
     user_update::UserUpdate,
 };
 
-pub struct GoTrueApi {
+pub struct Api {
     url: String,
     headers: HeaderMap,
     client: reqwest::Client,
 }
 
-impl GoTrueApi {
-    pub fn new(url: String) -> GoTrueApi {
-        GoTrueApi {
+impl Api {
+    pub fn new(url: String) -> Api {
+        Api {
             url,
             headers: HeaderMap::new(),
             client: reqwest::Client::new(),
