@@ -23,7 +23,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
   - [x] Create User
   - [x] Update User by Id
   - [x] Delete User
-  - [ ] Refresh Session
+  - [x] Refresh Session
   - [ ] Auth State Change Handler
   - [ ] Provider Sign In (Provides URL)
 - [ ] Documentation
