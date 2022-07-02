@@ -1,3 +1,5 @@
+# gotrue-rs
+
 [![Rust](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Fubinator/gotrue-rs/actions/workflows/ci.yml)
 [![Crate](https://img.shields.io/crates/v/go_true.svg)](https://crates.io/crates/go_true)
 [![License: MIT](https://img.shields.io/crates/l/go_true.svg)](#license)
