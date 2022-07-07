@@ -105,9 +105,22 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     client.sign_up(&email, &password).await;
     client.sign_in(&email, &password).await;
 
-    let success = client.sign_out().await;
+    let success = client.sign_out().await?;
 
     assert_eq!(success, true);
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_return_error_in_log_out_if_no_session() -> Result<(), Box<dyn Error>> {
+    let client = get_client();
+    let result = client.sign_out().await;
+
+    match result {
+        Ok(_) => panic!("Should throw error"),
+        Err(e) => assert!(matches!(e, go_true::error::Error::NotAuthenticated)),
+    }
+
     Ok(())
 }
 
