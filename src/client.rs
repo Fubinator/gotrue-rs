@@ -67,15 +67,15 @@ impl Client {
         }
     }
 
-    pub async fn sign_out(&self) -> bool {
+    pub async fn sign_out(&self) -> Result<bool, Error> {
         let result = match &self.current_session {
             Some(session) => self.api.sign_out(&session.access_token).await,
-            None => return true,
+            None => return Err(Error::NotAuthenticated),
         };
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(_) => return Err(Error::InternalError),
         }
     }
 
