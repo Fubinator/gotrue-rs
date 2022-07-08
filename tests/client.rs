@@ -174,7 +174,7 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
 
     let mut client = get_client();
     client.sign_up(&email, &password).await?;
-    let res = client.reset_password_for_email(&email).await;
+    let res = client.reset_password_for_email(&email).await?;
 
     assert_eq!(res, true);
     Ok(())
@@ -186,9 +186,13 @@ async fn it_should_return_false_if_email_was_not_found_in_password_recovery(
     let email = get_random_email();
 
     let client = get_client();
-    let res = client.reset_password_for_email(&email).await;
+    let result = client.reset_password_for_email(&email).await;
 
-    assert_eq!(res, false);
+    match result {
+        Ok(_) => panic!("Should throw error"),
+        Err(e) => assert!(matches!(e, go_true::error::Error::UserNotFound)),
+    }
+
     Ok(())
 }
 
