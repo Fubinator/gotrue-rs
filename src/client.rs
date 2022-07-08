@@ -21,15 +21,21 @@ impl Client {
         }
     }
 
-    pub async fn sign_up(&mut self, email: &String, password: &String) -> Session {
+    pub async fn sign_up(&mut self, email: &String, password: &String) -> Result<Session, Error> {
         let result = self.api.sign_up(&email, &password).await;
 
         match result {
             Ok(session) => {
                 self.current_session = Some(session.clone());
-                return session;
+                return Ok(session);
             }
-            Err(e) => panic!("{:?}", e),
+            Err(e) => {
+                println!("{:?}", e.to_string());
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::AlreadySignedUp);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
