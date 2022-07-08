@@ -8,20 +8,19 @@ use crate::{
 
 pub struct Client {
     current_session: Option<Session>,
-    auto_refresh_token: bool,
     api: Api,
 }
 
 impl Client {
     pub fn new(url: String) -> Client {
         Client {
-            auto_refresh_token: true,
             current_session: None,
             api: Api::new(url),
         }
     }
 
     pub async fn sign_up(&mut self, email: &String, password: &String) -> Result<Session, Error> {
+        self.current_session = None;
         let result = self.api.sign_up(&email, &password).await;
 
         match result {
@@ -39,6 +38,7 @@ impl Client {
     }
 
     pub async fn sign_in(&mut self, email: &String, password: &String) -> Result<Session, Error> {
+        self.current_session = None;
         let result = self.api.sign_in(&email, &password).await;
 
         match result {
@@ -73,7 +73,8 @@ impl Client {
         }
     }
 
-    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, Error> {
+    pub async fn verify_otp<T: serde::Serialize>(&mut self, params: T) -> Result<bool, Error> {
+        self.current_session = None;
         let result = self.api.verify_otp(params).await;
 
         match result {
