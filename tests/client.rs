@@ -56,9 +56,29 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
 
     let mut client = get_client();
     client.sign_up(&email, &password).await?;
-    let res = client.sign_in(&email, &password).await;
+    let res = client.sign_in(&email, &password).await?;
 
     assert_eq!(res.user.email, email);
+    Ok(())
+}
+
+#[tokio::test]
+async fn it_should_return_error_when_credentials_are_wrong_on_signin() -> Result<(), Box<dyn Error>>
+{
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    client.sign_up(&email, &password).await?;
+
+    let wrong_email = get_random_email();
+    let result = client.sign_in(&wrong_email, &password).await;
+
+    match result {
+        Ok(_) => panic!("Should throw error"),
+        Err(e) => assert!(matches!(e, go_true::error::Error::WrongCredentialsError)),
+    }
+
     Ok(())
 }
 
@@ -82,7 +102,7 @@ async fn it_should_refresh_session() -> Result<(), Box<dyn Error>> {
 
     let mut client = get_client();
     client.sign_up(&email, &password).await?;
-    let old_session = client.sign_in(&email, &password).await;
+    let old_session = client.sign_in(&email, &password).await?;
 
     let session = client.refresh_session().await?;
 
@@ -122,7 +142,7 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
 
     let mut client = get_client();
     client.sign_up(&email, &password).await?;
-    client.sign_in(&email, &password).await;
+    client.sign_in(&email, &password).await?;
 
     let success = client.sign_out().await?;
 
@@ -175,7 +195,7 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
 
     let mut client = get_client();
     client.sign_up(&email, &password).await?;
-    client.sign_in(&email, &password).await;
+    client.sign_in(&email, &password).await?;
 
     let new_email = get_random_email();
     let attributes = UserAttributes {
