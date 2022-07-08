@@ -99,12 +99,12 @@ impl Client {
         }
     }
 
-    pub async fn reset_password_for_email(&self, email: &str) -> bool {
+    pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, Error> {
         let result = self.api.reset_password_for_email(&email).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(_) => return Err(Error::UserNotFound),
         }
     }
 
