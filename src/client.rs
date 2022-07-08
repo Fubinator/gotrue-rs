@@ -73,12 +73,17 @@ impl Client {
         }
     }
 
-    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> bool {
+    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, Error> {
         let result = self.api.verify_otp(params).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::WrongToken);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
