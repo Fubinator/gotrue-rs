@@ -34,6 +34,8 @@ async fn main() {
 }
 ```
 
+For more information, check out the [API docs](https://docs.rs/go_true/0.1.0/go_true/)!
+
 ## Testing
 
 The first thing to do is to start the supabase server in docker:
