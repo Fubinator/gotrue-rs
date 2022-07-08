@@ -65,7 +65,7 @@ impl Client {
         match result {
             Ok(_) => return Ok(true),
             Err(e) => {
-                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                if e.is_status() && e.status().unwrap().as_str() == "422" {
                     return Err(Error::UserNotFound);
                 }
                 return Err(Error::InternalError);
