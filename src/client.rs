@@ -48,7 +48,7 @@ impl Client {
             }
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "400" {
-                    return Err(Error::WrongCredentialsError);
+                    return Err(Error::WrongCredentials);
                 }
                 return Err(Error::InternalError);
             }
@@ -59,12 +59,17 @@ impl Client {
         &self,
         email_or_phone: EmailOrPhone,
         should_create_user: Option<bool>,
-    ) -> bool {
+    ) -> Result<bool, Error> {
         let result = self.api.send_otp(email_or_phone, should_create_user).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::UserNotFound);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
