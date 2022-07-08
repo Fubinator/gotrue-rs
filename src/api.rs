@@ -122,7 +122,7 @@ impl Api {
     }
 
     pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, reqwest::Error> {
-        let endpoint = format!("{}/otp", self.url);
+        let endpoint = format!("{}/verify", self.url);
 
         let body = serde_json::to_value(&params).unwrap();
 

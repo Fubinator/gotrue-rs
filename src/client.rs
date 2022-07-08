@@ -21,27 +21,37 @@ impl Client {
         }
     }
 
-    pub async fn sign_up(&mut self, email: &String, password: &String) -> Session {
+    pub async fn sign_up(&mut self, email: &String, password: &String) -> Result<Session, Error> {
         let result = self.api.sign_up(&email, &password).await;
 
         match result {
             Ok(session) => {
                 self.current_session = Some(session.clone());
-                return session;
+                return Ok(session);
             }
-            Err(e) => panic!("{:?}", e),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::AlreadySignedUp);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
-    pub async fn sign_in(&mut self, email: &String, password: &String) -> Session {
+    pub async fn sign_in(&mut self, email: &String, password: &String) -> Result<Session, Error> {
         let result = self.api.sign_in(&email, &password).await;
 
         match result {
             Ok(session) => {
                 self.current_session = Some(session.clone());
-                return session;
+                return Ok(session);
             }
-            Err(e) => panic!("{:?}", e),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::WrongCredentials);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
@@ -49,54 +59,72 @@ impl Client {
         &self,
         email_or_phone: EmailOrPhone,
         should_create_user: Option<bool>,
-    ) -> bool {
+    ) -> Result<bool, Error> {
         let result = self.api.send_otp(email_or_phone, should_create_user).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "422" {
+                    return Err(Error::UserNotFound);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
-    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> bool {
+    pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, Error> {
         let result = self.api.verify_otp(params).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::WrongToken);
+                }
+                return Err(Error::InternalError);
+            }
         }
     }
 
-    pub async fn sign_out(&self) -> bool {
+    pub async fn sign_out(&self) -> Result<bool, Error> {
         let result = match &self.current_session {
             Some(session) => self.api.sign_out(&session.access_token).await,
-            None => return true,
+            None => return Err(Error::NotAuthenticated),
         };
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(_) => return Err(Error::InternalError),
         }
     }
 
-    pub async fn reset_password_for_email(&self, email: &str) -> bool {
+    pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, Error> {
         let result = self.api.reset_password_for_email(&email).await;
 
         match result {
-            Ok(_) => return true,
-            Err(_) => return false,
+            Ok(_) => return Ok(true),
+            Err(_) => return Err(Error::UserNotFound),
         }
     }
 
-    pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, reqwest::Error> {
+    pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, Error> {
         let session = match &self.current_session {
             Some(s) => s,
-            None => panic!("Not logged in"),
+            None => return Err(Error::NotAuthenticated),
         };
 
-        let result = self.api.update_user(user, &session.access_token).await?;
+        let result = self.api.update_user(user, &session.access_token).await;
 
-        return Ok(result);
+        match result {
+            Ok(user) => return Ok(user),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::UserNotFound);
+                }
+                return Err(Error::InternalError);
+            }
+        }
     }
 
     pub async fn refresh_session(&mut self) -> Result<Session, Error> {
