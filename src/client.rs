@@ -108,15 +108,23 @@ impl Client {
         }
     }
 
-    pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, reqwest::Error> {
+    pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, Error> {
         let session = match &self.current_session {
             Some(s) => s,
-            None => panic!("Not logged in"),
+            None => return Err(Error::NotAuthenticated),
         };
 
-        let result = self.api.update_user(user, &session.access_token).await?;
+        let result = self.api.update_user(user, &session.access_token).await;
 
-        return Ok(result);
+        match result {
+            Ok(user) => return Ok(user),
+            Err(e) => {
+                if e.is_status() && e.status().unwrap().as_str() == "400" {
+                    return Err(Error::UserNotFound);
+                }
+                return Err(Error::InternalError);
+            }
+        }
     }
 
     pub async fn refresh_session(&mut self) -> Result<Session, Error> {
