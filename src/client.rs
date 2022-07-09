@@ -19,9 +19,13 @@ impl Client {
         }
     }
 
-    pub async fn sign_up(&mut self, email: &String, password: &String) -> Result<Session, Error> {
+    pub async fn sign_up(
+        &mut self,
+        email_or_phone: EmailOrPhone,
+        password: &String,
+    ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_up(&email, &password).await;
+        let result = self.api.sign_up(email_or_phone, &password).await;
 
         match result {
             Ok(session) => {
@@ -37,9 +41,13 @@ impl Client {
         }
     }
 
-    pub async fn sign_in(&mut self, email: &String, password: &String) -> Result<Session, Error> {
+    pub async fn sign_in(
+        &mut self,
+        email_or_phone: EmailOrPhone,
+        password: &String,
+    ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_in(&email, &password).await;
+        let result = self.api.sign_in(email_or_phone, &password).await;
 
         match result {
             Ok(session) => {
