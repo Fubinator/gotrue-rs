@@ -24,7 +24,9 @@ async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    let res = client.sign_up(&email, &password).await?;
+    let res = client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(email, res.user.email);
 
@@ -37,9 +39,11 @@ async fn it_should_throw_email_already_taken_error() -> Result<(), Box<dyn Error
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
-    let result = client.sign_up(&email, &password).await;
+    let result = client.sign_up(EmailOrPhone::Email(email), &password).await;
 
     match result {
         Ok(_) => panic!("Should throw error"),
@@ -55,8 +59,12 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
-    let res = client.sign_in(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let res = client
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(res.user.email, email);
     Ok(())
@@ -69,10 +77,14 @@ async fn it_should_return_error_when_credentials_are_wrong_on_signin() -> Result
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email), &password)
+        .await?;
 
     let wrong_email = get_random_email();
-    let result = client.sign_in(&wrong_email, &password).await;
+    let result = client
+        .sign_in(EmailOrPhone::Email(wrong_email), &password)
+        .await;
 
     match result {
         Ok(_) => panic!("Should throw error"),
@@ -101,8 +113,12 @@ async fn it_should_refresh_session() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
-    let old_session = client.sign_in(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let old_session = client
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     let session = client.refresh_session().await?;
 
@@ -118,7 +134,9 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
     let res = client.send_otp(EmailOrPhone::Email(email), None).await?;
 
     assert_eq!(res, true);
@@ -145,8 +163,12 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
-    client.sign_in(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    client
+        .sign_in(EmailOrPhone::Email(email), &password)
+        .await?;
 
     let success = client.sign_out().await?;
 
@@ -173,7 +195,9 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
     let res = client.reset_password_for_email(&email).await?;
 
     assert_eq!(res, true);
@@ -202,8 +226,12 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let mut client = get_client();
-    client.sign_up(&email, &password).await?;
-    client.sign_in(&email, &password).await?;
+    client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    client
+        .sign_in(EmailOrPhone::Email(email), &password)
+        .await?;
 
     let new_email = get_random_email();
     let attributes = UserAttributes {
