@@ -56,7 +56,9 @@ async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    let res = api.sign_up(&email, &password).await?;
+    let res = api
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(res.user.email, email);
 
@@ -69,8 +71,11 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let res = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let res = api
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(res.user.email, email);
     Ok(())
@@ -82,8 +87,11 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let res = api.send_otp(EmailOrPhone::Email(email), None).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let res = api
+        .send_otp(EmailOrPhone::Email(email.clone()), None)
+        .await?;
 
     assert_eq!(res, true);
 
@@ -110,8 +118,11 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let res = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let res = api
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(res.user.email, email);
 
@@ -128,8 +139,11 @@ async fn it_should_return_error_if_token_is_invalid() -> Result<(), Box<dyn Erro
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let res = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let res = api
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     assert_eq!(res.user.email, email);
 
@@ -148,7 +162,8 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     let success = api.reset_password_for_email(&email).await?;
     assert_eq!(success, true);
@@ -185,8 +200,11 @@ async fn it_should_refresh_token() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let session = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let session = api
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     let new_session = api.refresh_access_token(&session.refresh_token).await?;
 
@@ -201,8 +219,11 @@ async fn it_should_return_user() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let session = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let session = api
+        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     let user = api.get_user(&session.access_token).await?;
 
@@ -217,8 +238,9 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
     let password = String::from("Abcd1234!");
 
     let api = get_api_client();
-    api.sign_up(&email, &password).await?;
-    let session = api.sign_in(&email, &password).await?;
+    api.sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+    let session = api.sign_in(EmailOrPhone::Email(email), &password).await?;
 
     let new_email = get_random_email();
     let attributes = UserAttributes {
@@ -250,7 +272,9 @@ async fn it_should_list_users() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
     let client_api = get_api_client();
-    client_api.sign_up(&email, &password).await?;
+    client_api
+        .sign_up(EmailOrPhone::Email(email), &password)
+        .await?;
 
     let api = get_service_api_client();
     let users = api.list_users(None).await?;
@@ -265,7 +289,9 @@ async fn it_should_get_user_by_id() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
     let client_api = get_api_client();
-    let session = client_api.sign_up(&email, &password).await?;
+    let session = client_api
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
 
     let api = get_service_api_client();
     let user = api.get_user_by_id(&session.user.id).await?;

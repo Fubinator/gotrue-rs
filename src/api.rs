@@ -40,15 +40,21 @@ impl Api {
 
     pub async fn sign_up(
         &self,
-        email: &String,
+        email_or_phone: EmailOrPhone,
         password: &String,
     ) -> Result<Session, reqwest::Error> {
         let endpoint = format!("{}/signup", self.url);
 
-        let body = json!({
-            "email": &email,
-            "password": &password,
-        });
+        let body = match email_or_phone {
+            EmailOrPhone::Email(email) => json!({
+                "email": email,
+                "password": &password,
+            }),
+            EmailOrPhone::Phone(phone) => json!({
+                "phone": phone,
+                "password": &password
+            }),
+        };
 
         let response: Session = self
             .client
@@ -66,17 +72,23 @@ impl Api {
 
     pub async fn sign_in(
         &self,
-        email: &String,
+        email_or_phone: EmailOrPhone,
         password: &String,
     ) -> Result<Session, reqwest::Error> {
         let query_string = String::from("?grant_type=password");
 
         let endpoint = format!("{}/token{}", self.url, query_string);
 
-        let body = json!({
-            "email": &email,
-            "password": &password,
-        });
+        let body = match email_or_phone {
+            EmailOrPhone::Email(email) => json!({
+                "email": email,
+                "password": &password,
+            }),
+            EmailOrPhone::Phone(phone) => json!({
+                "phone": phone,
+                "password": &password
+            }),
+        };
 
         let response: Session = self
             .client
