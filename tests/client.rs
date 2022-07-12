@@ -246,3 +246,19 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn it_should_set_session_by_refresh_token() -> Result<(), Box<dyn Error>> {
+    let email = get_random_email();
+    let password = String::from("Abcd1234!");
+
+    let mut client = get_client();
+    let old_session = client
+        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .await?;
+
+    let session = client.set_session(&old_session.refresh_token).await?;
+    assert_eq!(old_session.user.email, session.user.email);
+
+    Ok(())
+}
