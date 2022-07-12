@@ -155,4 +155,21 @@ impl Client {
 
         return Ok(session);
     }
+
+    pub async fn set_session(&mut self, refresh_token: &str) -> Result<Session, Error> {
+        if refresh_token.len() < 1 {
+            return Err(Error::NotAuthenticated);
+        }
+
+        let result = self.api.refresh_access_token(refresh_token).await;
+
+        let session = match result {
+            Ok(session) => session,
+            Err(_) => return Err(Error::InternalError),
+        };
+
+        self.current_session = Some(session.clone());
+
+        return Ok(session);
+    }
 }
