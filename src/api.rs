@@ -239,10 +239,10 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///
-    ///     let email = "email1@example.com".to_string();
+    ///     let email = "email@example.com".to_string();
     ///     let password = "Abcd1234!".to_string();
     ///
-    ///     let session = client.sign_up(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
     ///     client.sign_out(&session.access_token);
     ///
     ///     Ok(())
@@ -303,6 +303,28 @@ impl Api {
         return format!("{}/authorize?provider={}", self.url, provider);
     }
 
+    /// Refreshes the current session by refresh token
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
+    ///
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     client.refresh_access_token(&session.refresh_token);
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn refresh_access_token(
         &self,
         refresh_token: &str,
@@ -324,6 +346,28 @@ impl Api {
         return Ok(session);
     }
 
+    /// Gets a user by access token
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
+    ///
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let user = client.get_user(&session.access_token);
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn get_user(&self, jwt: &str) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/user", self.url);
 
