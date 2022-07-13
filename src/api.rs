@@ -18,6 +18,15 @@ pub enum EmailOrPhone {
 }
 
 impl Api {
+    /// Creates a GoTrue API client.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::Api;
+    ///
+    /// let client = Api::new("http://your.gotrue.endpoint");
+    /// ```
     pub fn new(url: String) -> Api {
         Api {
             url,
@@ -26,6 +35,17 @@ impl Api {
         }
     }
 
+    /// Add arbitrary headers to the request. For instance when you may want to connect
+    /// through an API gateway that needs an API key header.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::Api;
+    ///
+    /// let client = Api::new("https://your.gotrue.endpoint")
+    ///     .insert_header("apikey", "super.secret.key");
+    /// ```
     pub fn insert_header(
         mut self,
         header_name: impl IntoHeaderName,
@@ -38,6 +58,21 @@ impl Api {
         self
     }
 
+    /// Signs up for a new account
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// let url = "http://localhost:9998".to_string();
+    /// let mut client = Api::new(url);
+    ///
+    /// let email = "email@example.com".to_string();
+    /// let password = "Abcd1234!".to_string();
+    ///
+    /// let result = client.sign_up(&email, &password).await;
+    /// ```
     pub async fn sign_up(
         &self,
         email_or_phone: EmailOrPhone,
@@ -70,6 +105,21 @@ impl Api {
         return Ok(response);
     }
 
+    /// Signs into an existing account
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// let url = "http://localhost:9998".to_string();
+    /// let mut client = Api::new(url);
+    ///
+    /// let email = "email@example.com".to_string();
+    /// let password = "Abcd1234!".to_string();
+    ///
+    /// let result = client.sign_in(&email, &password).await;
+    /// ```
     pub async fn sign_in(
         &self,
         email_or_phone: EmailOrPhone,
@@ -104,6 +154,20 @@ impl Api {
         return Ok(response);
     }
 
+    /// Sends an OTP Code and creates user if it does not exist
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// let url = "http://localhost:9998".to_string();
+    /// let mut client = Api::new(url);
+    ///
+    /// let email = "email@example.com".to_string();
+    ///
+    /// let result = client.send_otp(EmailOrPhone::Email(email), None).await;
+    /// ```
     pub async fn send_otp(
         &self,
         email_or_phone: EmailOrPhone,
@@ -149,6 +213,23 @@ impl Api {
         return Ok(true);
     }
 
+    /// Signs the current user out
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// let url = "http://localhost:9998".to_string();
+    /// let mut client = Api::new(url);
+    ///
+    ///
+    /// let email = "email@example.com".to_string();
+    /// let password = "Abcd1234!".to_string();
+    ///
+    /// let session = client.sign_in(&email, &password).await?;
+    /// client.sign_out(&session.access_token);
+    /// ```
     pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
 
@@ -169,6 +250,19 @@ impl Api {
         return Ok(true);
     }
 
+    /// Sends password recovery email
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// let url = "http://localhost:9998".to_string();
+    /// let mut client = Api::new(url);
+    /// let email = "random@mail.com".to_string();
+    ///
+    /// client.reset_password_for_email(&email);
+    /// ```
     pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/recover", self.url);
 
