@@ -239,10 +239,10 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///
-    ///     let email = "email@example.com".to_string();
+    ///     let email = "email1@example.com".to_string();
     ///     let password = "Abcd1234!".to_string();
     ///
-    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_up(EmailOrPhone::Email(email), &password).await?;
     ///     client.sign_out(&session.access_token);
     ///
     ///     Ok(())
