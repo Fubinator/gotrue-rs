@@ -25,7 +25,7 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("http://your.gotrue.endpoint");
+    /// let client = Api::new("http://your.gotrue.endpoint".to_string());
     /// ```
     pub fn new(url: String) -> Api {
         Api {
@@ -43,7 +43,7 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("https://your.gotrue.endpoint")
+    /// let client = Api::new("https://your.gotrue.endpoint".to_string())
     ///     .insert_header("apikey", "super.secret.key");
     /// ```
     pub fn insert_header(
@@ -65,13 +65,17 @@ impl Api {
     /// ```
     /// use go_true::{Api, EmailOrPhone};
     ///
-    /// let url = "http://localhost:9998".to_string();
-    /// let mut client = Api::new(url);
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
     ///
-    /// let email = "email@example.com".to_string();
-    /// let password = "Abcd1234!".to_string();
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
     ///
-    /// let result = client.sign_up(&email, &password).await;
+    ///     let result = client.sign_up(EmailOrPhone::Email(email), &password).await;
+    ///     Ok(())
+    /// }
     /// ```
     pub async fn sign_up(
         &self,
@@ -112,13 +116,18 @@ impl Api {
     /// ```
     /// use go_true::{Api, EmailOrPhone};
     ///
-    /// let url = "http://localhost:9998".to_string();
-    /// let mut client = Api::new(url);
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
     ///
-    /// let email = "email@example.com".to_string();
-    /// let password = "Abcd1234!".to_string();
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
     ///
-    /// let result = client.sign_in(&email, &password).await;
+    ///     let result = client.sign_in(EmailOrPhone::Email(email), &password).await;
+    ///     
+    ///     Ok(())
+    /// }
     /// ```
     pub async fn sign_in(
         &self,
@@ -161,12 +170,16 @@ impl Api {
     /// ```
     /// use go_true::{Api, EmailOrPhone};
     ///
-    /// let url = "http://localhost:9998".to_string();
-    /// let mut client = Api::new(url);
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
     ///
-    /// let email = "email@example.com".to_string();
+    ///     let email = "email@example.com".to_string();
     ///
-    /// let result = client.send_otp(EmailOrPhone::Email(email), None).await;
+    ///     let result = client.send_otp(EmailOrPhone::Email(email), None).await;
+    ///     Ok(())
+    /// }
     /// ```
     pub async fn send_otp(
         &self,
@@ -220,15 +233,20 @@ impl Api {
     /// ```
     /// use go_true::{Api, EmailOrPhone};
     ///
-    /// let url = "http://localhost:9998".to_string();
-    /// let mut client = Api::new(url);
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
     ///
     ///
-    /// let email = "email@example.com".to_string();
-    /// let password = "Abcd1234!".to_string();
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
     ///
-    /// let session = client.sign_in(&email, &password).await?;
-    /// client.sign_out(&session.access_token);
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     client.sign_out(&session.access_token);
+    ///
+    ///     Ok(())
+    /// }
     /// ```
     pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
