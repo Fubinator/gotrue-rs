@@ -20,4 +20,4 @@ jobs:
       - name: Docker
         run: cd ./infra && docker-compose up -d
       - name: Run tests
-        run: cargo test --tests --verbose
+        run: RUST_BACKTRACE=1 cargo test --tests --verbose
