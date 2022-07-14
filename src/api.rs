@@ -408,16 +408,16 @@ impl Api {
     ///
     ///     client.sign_up(EmailOrPhone::Email(email.clone()), &password)
     ///         .await?;
-    ///     let session = api.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
     ///
-    ///     let new_email = get_random_email();
+    ///     let new_email = "otheremail@example.com";
     ///     let attributes = UserAttributes {
     ///         email: new_email.clone(),
     ///         password: "Abcd12345!".to_string(),
     ///         data: json!({ "test": "test" }),
     ///     };
     ///
-    ///     let updatedUser = api.update_user(attributes, &session.access_token).await?;
+    ///     let updatedUser = client.update_user(attributes, &session.access_token).await?;
     ///     Ok(())
     /// }
     /// ```
@@ -451,6 +451,25 @@ impl Api {
         return Ok(user);
     }
 
+    /// Invites a user via email
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///
+    ///     let user = client.invite_user_by_email(&email).await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn invite_user_by_email(&self, email: &str) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/invite", self.url);
 
@@ -472,6 +491,29 @@ impl Api {
         return Ok(user);
     }
 
+    /// Lists all users based on a query string
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///
+    ///     client
+    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .await?;
+    ///
+    ///     let users = client.list_users(None).await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn list_users(
         &self,
         query_string: Option<String>,
@@ -494,6 +536,29 @@ impl Api {
         return Ok(users);
     }
 
+    /// Gets a user by id
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///
+    ///     let session = client
+    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .await?;
+    ///
+    ///     let user = client.get_user_by_id(&session.user.id).await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn get_user_by_id(&self, user_id: &str) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/admin/users/{}", self.url, user_id);
 
@@ -510,6 +575,31 @@ impl Api {
         return Ok(user);
     }
 
+    /// Creates a user
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let user = AdminUserAttributes {
+    ///         email: email.clone(),
+    ///         password: Some(String::from("Abcd1234!")),
+    ///         data: None,
+    ///         email_confirmed: None,
+    ///         phone_confirmed: None,
+    ///     };
+
+    ///     client.create_user(user).await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn create_user<T: serde::Serialize>(&self, user: T) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/admin/users", self.url);
 
@@ -529,6 +619,42 @@ impl Api {
         return Ok(user);
     }
 
+    /// Updates a user by id
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let user = AdminUserAttributes {
+    ///         email: email.clone(),
+    ///         password: Some(String::from("Abcd1234!")),
+    ///         data: None,
+    ///         email_confirmed: None,
+    ///         phone_confirmed: None,
+    ///     };
+    ///
+    ///     client.create_user(user).await?;
+    ///     let user = AdminUserAttributes {
+    ///         email: "newemail@example.com".to_string(),
+    ///         password: None,
+    ///         data: None,
+    ///         email_confirmed: None,
+    ///         phone_confirmed: None,
+    ///     };
+    ///
+    ///     let update_response = client
+    ///         .update_user_by_id(&create_response.id, user.clone())
+    ///         .await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn update_user_by_id<T: serde::Serialize>(
         &self,
         id: &str,
@@ -552,6 +678,32 @@ impl Api {
         return Ok(user);
     }
 
+    /// Deletes a user by id
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let user = AdminUserAttributes {
+    ///         email: email.clone(),
+    ///         password: Some(String::from("Abcd1234!")),
+    ///         data: None,
+    ///         email_confirmed: None,
+    ///         phone_confirmed: None,
+    ///     };
+
+    ///     let user = client.create_user(user).await?;
+    ///     client.delete_user(&user.id).await?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn delete_user(&self, user_id: &str) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/admin/users/{}", self.url, user_id);
 
