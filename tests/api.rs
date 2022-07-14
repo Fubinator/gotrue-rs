@@ -171,21 +171,6 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
     Ok(())
 }
 
-#[tokio::test]
-async fn it_should_return_error_in_password_recovery_if_email_was_not_found(
-) -> Result<(), Box<dyn Error>> {
-    let email = get_random_email();
-
-    let api = get_api_client();
-    let success = api.reset_password_for_email(&email).await;
-    match success {
-        Ok(_) => panic!("Should not work"),
-        Err(_) => assert!(true),
-    }
-
-    Ok(())
-}
-
 #[test]
 fn it_should_return_url_for_provider() {
     let api = get_api_client();
