@@ -205,22 +205,6 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
 }
 
 #[tokio::test]
-async fn it_should_return_false_if_email_was_not_found_in_password_recovery(
-) -> Result<(), Box<dyn Error>> {
-    let email = get_random_email();
-
-    let client = get_client();
-    let result = client.reset_password_for_email(&email).await;
-
-    match result {
-        Ok(_) => panic!("Should throw error"),
-        Err(e) => assert!(matches!(e, go_true::error::Error::UserNotFound)),
-    }
-
-    Ok(())
-}
-
-#[tokio::test]
 async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
     let password = String::from("Abcd1234!");
