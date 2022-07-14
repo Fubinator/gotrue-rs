@@ -48,7 +48,7 @@ docker compose up
 Once the server has been started, the tests can be run:
 
 ```sh
-cargo test
+cargo test --tests
 ```
 
 ## Contributing
