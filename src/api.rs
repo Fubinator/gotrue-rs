@@ -391,6 +391,36 @@ impl Api {
         return Ok(user);
     }
 
+    /// Updates a user
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Api, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let url = "http://localhost:9998".to_string();
+    ///     let mut client = Api::new(url);
+    ///
+    ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
+    ///
+    ///     client.sign_up(EmailOrPhone::Email(email.clone()), &password)
+    ///         .await?;
+    ///     let session = api.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///
+    ///     let new_email = get_random_email();
+    ///     let attributes = UserAttributes {
+    ///         email: new_email.clone(),
+    ///         password: "Abcd12345!".to_string(),
+    ///         data: json!({ "test": "test" }),
+    ///     };
+    ///
+    ///     let updatedUser = api.update_user(attributes, &session.access_token).await?;
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn update_user(
         &self,
         user: UserAttributes,
