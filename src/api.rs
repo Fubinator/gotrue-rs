@@ -397,6 +397,7 @@ impl Api {
     ///
     /// ```
     /// use go_true::{Api, EmailOrPhone};
+    /// use serde_json::json;
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -504,6 +505,7 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
     ///
     ///     client
     ///         .sign_up(EmailOrPhone::Email(email), &password)
@@ -549,6 +551,7 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///     let email = "email@example.com".to_string();
+    ///     let password = "Abcd1234!".to_string();
     ///
     ///     let session = client
     ///         .sign_up(EmailOrPhone::Email(email), &password)
@@ -588,7 +591,7 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///     let user = AdminUserAttributes {
-    ///         email: email.clone(),
+    ///         email: "createemail@example.com",
     ///         password: Some(String::from("Abcd1234!")),
     ///         data: None,
     ///         email_confirmed: None,
@@ -632,14 +635,14 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///     let user = AdminUserAttributes {
-    ///         email: email.clone(),
+    ///         email: "oldemail@example.com",
     ///         password: Some(String::from("Abcd1234!")),
     ///         data: None,
     ///         email_confirmed: None,
     ///         phone_confirmed: None,
     ///     };
     ///
-    ///     client.create_user(user).await?;
+    ///     let create_response = client.create_user(user).await?;
     ///     let user = AdminUserAttributes {
     ///         email: "newemail@example.com".to_string(),
     ///         password: None,
@@ -691,7 +694,7 @@ impl Api {
     ///     let mut client = Api::new(url);
     ///
     ///     let user = AdminUserAttributes {
-    ///         email: email.clone(),
+    ///         email: "delete@example.com",
     ///         password: Some(String::from("Abcd1234!")),
     ///         data: None,
     ///         email_confirmed: None,
