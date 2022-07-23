@@ -12,6 +12,15 @@ pub struct Client {
 }
 
 impl Client {
+    /// Creates a GoTrue Client.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::Client;
+    ///
+    /// let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// ```
     pub fn new(url: String) -> Client {
         Client {
             current_session: None,
@@ -19,6 +28,23 @@ impl Client {
         }
     }
 
+    /// Signs up a new user.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let email = "some_email".to_string();
+    ///     let password = "some_password".to_string();
+    ///     let res = client
+    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .await?;
+    ///     Ok(())
+    /// }
     pub async fn sign_up(
         &mut self,
         email_or_phone: EmailOrPhone,
@@ -41,6 +67,23 @@ impl Client {
         }
     }
 
+    /// Signs in a user.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let email = "some_email".to_string();
+    ///     let password = "some_password".to_string();
+    ///     let res = client
+    ///         .sign_in(EmailOrPhone::Email(email), &password)
+    ///         .await?;
+    ///     Ok(())
+    /// }
     pub async fn sign_in(
         &mut self,
         email_or_phone: EmailOrPhone,
@@ -63,6 +106,23 @@ impl Client {
         }
     }
 
+    /// Sends an OTP
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client, EmailOrPhone};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let email = "some_email".to_string();
+    ///
+    ///     let res = client
+    ///         .send_otp(EmailOrPhone::Email(email), None)
+    ///         .await?;
+    ///     Ok(())
+    /// }
     pub async fn send_otp(
         &self,
         email_or_phone: EmailOrPhone,
@@ -96,6 +156,22 @@ impl Client {
         }
     }
 
+    /// Sign out the current user
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///
+    ///     // Sign in first
+    ///
+    ///     let res = client.sign_out().await?;
+    ///     Ok(())
+    /// }
     pub async fn sign_out(&self) -> Result<bool, Error> {
         let result = match &self.current_session {
             Some(session) => self.api.sign_out(&session.access_token).await,
@@ -108,6 +184,21 @@ impl Client {
         }
     }
 
+    /// Reset a user's password for an email address
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let email = "some_email".to_string()
+    ///
+    ///     let res = client.reset_password_for_email(&email).await?;
+    ///     Ok(())
+    /// }
     pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, Error> {
         let result = self.api.reset_password_for_email(&email).await;
 
@@ -136,6 +227,22 @@ impl Client {
         }
     }
 
+    /// Refreshes the current session
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///
+    ///     // sign in first
+    ///
+    ///     client.refresh_session().await?:
+    ///     Ok(())
+    /// }
     pub async fn refresh_session(&mut self) -> Result<Session, Error> {
         if self.current_session.is_none() {
             return Err(Error::NotAuthenticated);
@@ -156,6 +263,21 @@ impl Client {
         return Ok(session);
     }
 
+    /// Sets a session by refresh token
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use go_true::{Client};
+    ///
+    /// #[tokio::main]
+    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let token = "refresh_token".to_string();
+    ///
+    ///     let session = client.set_session(token).await?:
+    ///     Ok(())
+    /// }
     pub async fn set_session(&mut self, refresh_token: &str) -> Result<Session, Error> {
         if refresh_token.len() < 1 {
             return Err(Error::NotAuthenticated);
