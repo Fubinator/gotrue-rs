@@ -10,7 +10,7 @@ This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in 
 Add the following line to your `Cargo.toml`:
 
 ```toml
-go_true = "0.1.0"
+go_true = "0.1.1"
 ```
 
 ## Examples
