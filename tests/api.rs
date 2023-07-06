@@ -21,9 +21,7 @@ struct AdminUserAttributes {
 }
 
 fn get_api_client() -> Api {
-    let api: Api = Api::new(String::from("http://localhost:9998"));
-
-    return api;
+    Api::new(String::from("http://localhost:9998"))
 }
 
 fn get_service_api_client() -> Api {
@@ -36,7 +34,7 @@ fn get_service_api_client() -> Api {
     let api: Api = Api::new(String::from("http://localhost:9998"))
         .insert_header("Authorization", format!("Bearer {token_str}"));
 
-    return api;
+    api
 }
 
 fn get_random_email() -> String {
@@ -47,7 +45,7 @@ fn get_random_email() -> String {
         .map(char::from)
         .collect();
 
-    return format!("{random_string}@example.com");
+    format!("{random_string}@example.com")
 }
 
 #[tokio::test]
@@ -93,7 +91,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
         .send_otp(EmailOrPhone::Email(email.clone()), None)
         .await?;
 
-    assert_eq!(res, true);
+    assert!(res);
 
     Ok(())
 }
@@ -106,10 +104,8 @@ async fn it_does_not_send_magic_link_with_invalid_email() -> Result<(), Box<dyn 
 
     match response {
         Ok(_) => panic!("Should not work"),
-        Err(_) => assert!(true),
+        Err(_) => Ok(()),
     }
-
-    Ok(())
 }
 
 #[tokio::test]
@@ -128,7 +124,7 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
 
     let success = api.sign_out(&res.access_token).await?;
 
-    assert_eq!(success, true);
+    assert!(success);
 
     Ok(())
 }
@@ -151,9 +147,8 @@ async fn it_should_return_error_if_token_is_invalid() -> Result<(), Box<dyn Erro
 
     match success {
         Ok(_) => panic!("Should not work"),
-        Err(_) => assert!(true),
+        Err(_) => Ok(()),
     }
-    Ok(())
 }
 
 #[tokio::test]
@@ -166,7 +161,7 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
         .await?;
 
     let success = api.reset_password_for_email(&email).await?;
-    assert_eq!(success, true);
+    assert!(success);
 
     Ok(())
 }
@@ -264,7 +259,7 @@ async fn it_should_list_users() -> Result<(), Box<dyn Error>> {
     let api = get_service_api_client();
     let users = api.list_users(None).await?;
 
-    assert_eq!(users.users.is_empty(), false);
+    assert!(!users.users.is_empty());
 
     Ok(())
 }
@@ -357,14 +352,11 @@ async fn it_should_delete_user() -> Result<(), Box<dyn Error>> {
     let old_user_list = api.list_users(None).await?;
 
     api.delete_user(&create_response.id).await?;
-    assert_eq!(
-        old_user_list.users.iter().any(|user| user.email == email),
-        true
-    );
+    assert!(old_user_list.users.iter().any(|user| user.email == email));
 
     let userlist = api.list_users(None).await?;
 
-    assert_eq!(userlist.users.iter().any(|user| user.email == email), false);
+    assert!(!userlist.users.iter().any(|user| user.email == email));
 
     Ok(())
 }

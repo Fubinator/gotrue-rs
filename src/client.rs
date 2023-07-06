@@ -6,6 +6,7 @@ use crate::{
     user_update::UserUpdate,
 };
 
+#[derive(Debug, Clone)]
 pub struct Client {
     current_session: Option<Session>,
     api: Api,
@@ -51,18 +52,18 @@ impl Client {
         password: &String,
     ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_up(email_or_phone, &password).await;
+        let result = self.api.sign_up(email_or_phone, password).await;
 
         match result {
             Ok(session) => {
                 self.current_session = Some(session.clone());
-                return Ok(session);
+                Ok(session)
             }
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "400" {
                     return Err(Error::AlreadySignedUp);
                 }
-                return Err(Error::InternalError);
+                Err(Error::InternalError)
             }
         }
     }
@@ -90,18 +91,19 @@ impl Client {
         password: &String,
     ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_in(email_or_phone, &password).await;
+        let result = self.api.sign_in(email_or_phone, password).await;
 
         match result {
             Ok(session) => {
                 self.current_session = Some(session.clone());
-                return Ok(session);
+                Ok(session)
             }
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "400" {
-                    return Err(Error::WrongCredentials);
+                    Err(Error::WrongCredentials)
+                } else {
+                    Err(Error::InternalError)
                 }
-                return Err(Error::InternalError);
             }
         }
     }
@@ -131,12 +133,13 @@ impl Client {
         let result = self.api.send_otp(email_or_phone, should_create_user).await;
 
         match result {
-            Ok(_) => return Ok(true),
+            Ok(_) => Ok(true),
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "422" {
-                    return Err(Error::UserNotFound);
+                    Err(Error::UserNotFound)
+                } else {
+                    Err(Error::InternalError)
                 }
-                return Err(Error::InternalError);
             }
         }
     }
@@ -146,12 +149,13 @@ impl Client {
         let result = self.api.verify_otp(params).await;
 
         match result {
-            Ok(_) => return Ok(true),
+            Ok(_) => Ok(true),
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "400" {
-                    return Err(Error::WrongToken);
+                    Err(Error::WrongToken)
+                } else {
+                    Err(Error::InternalError)
                 }
-                return Err(Error::InternalError);
             }
         }
     }
@@ -179,8 +183,8 @@ impl Client {
         };
 
         match result {
-            Ok(_) => return Ok(true),
-            Err(_) => return Err(Error::InternalError),
+            Ok(_) => Ok(true),
+            Err(_) => Err(Error::InternalError),
         }
     }
 
@@ -200,11 +204,11 @@ impl Client {
     ///     Ok(())
     /// }
     pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, Error> {
-        let result = self.api.reset_password_for_email(&email).await;
+        let result = self.api.reset_password_for_email(email).await;
 
         match result {
-            Ok(_) => return Ok(true),
-            Err(_) => return Err(Error::UserNotFound),
+            Ok(_) => Ok(true),
+            Err(_) => Err(Error::UserNotFound),
         }
     }
 
@@ -217,12 +221,13 @@ impl Client {
         let result = self.api.update_user(user, &session.access_token).await;
 
         match result {
-            Ok(user) => return Ok(user),
+            Ok(user) => Ok(user),
             Err(e) => {
                 if e.is_status() && e.status().unwrap().as_str() == "400" {
-                    return Err(Error::UserNotFound);
+                    Err(Error::UserNotFound)
+                } else {
+                    Err(Error::InternalError)
                 }
-                return Err(Error::InternalError);
             }
         }
     }
@@ -260,7 +265,7 @@ impl Client {
 
         self.current_session = Some(session.clone());
 
-        return Ok(session);
+        Ok(session)
     }
 
     /// Sets a session by refresh token
@@ -279,7 +284,7 @@ impl Client {
     ///     Ok(())
     /// }
     pub async fn set_session(&mut self, refresh_token: &str) -> Result<Session, Error> {
-        if refresh_token.len() < 1 {
+        if refresh_token.is_empty() {
             return Err(Error::NotAuthenticated);
         }
 
@@ -292,6 +297,6 @@ impl Client {
 
         self.current_session = Some(session.clone());
 
-        return Ok(session);
+        Ok(session)
     }
 }
