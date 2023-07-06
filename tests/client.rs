@@ -4,7 +4,7 @@ use serde_json::json;
 use std::error::Error;
 
 fn get_client() -> Client {
-    return Client::new("http://localhost:9998".to_string());
+    Client::new("http://localhost:9998".to_string())
 }
 
 fn get_random_email() -> String {
@@ -15,7 +15,7 @@ fn get_random_email() -> String {
         .map(char::from)
         .collect();
 
-    return format!("{random_string}@example.com");
+    format!("{random_string}@example.com")
 }
 
 #[tokio::test]
@@ -139,7 +139,7 @@ async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
         .await?;
     let res = client.send_otp(EmailOrPhone::Email(email), None).await?;
 
-    assert_eq!(res, true);
+    assert!(res);
     Ok(())
 }
 
@@ -172,7 +172,7 @@ async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
 
     let success = client.sign_out().await?;
 
-    assert_eq!(success, true);
+    assert!(success);
     Ok(())
 }
 
@@ -200,7 +200,7 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
         .await?;
     let res = client.reset_password_for_email(&email).await?;
 
-    assert_eq!(res, true);
+    assert!(res);
     Ok(())
 }
 

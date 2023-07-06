@@ -6,6 +6,7 @@ use crate::{
     user_update::UserUpdate,
 };
 
+#[derive(Debug, Clone)]
 pub struct Api {
     url: String,
     headers: HeaderMap,
@@ -106,7 +107,7 @@ impl Api {
             .json::<Session>()
             .await?;
 
-        return Ok(response);
+        Ok(response)
     }
 
     /// Signs into an existing account
@@ -160,7 +161,7 @@ impl Api {
             .json::<Session>()
             .await?;
 
-        return Ok(response);
+        Ok(response)
     }
 
     /// Sends an OTP Code and creates user if it does not exist
@@ -207,7 +208,7 @@ impl Api {
             .await?
             .error_for_status()?;
 
-        return Ok(true);
+        Ok(true)
     }
 
     pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, reqwest::Error> {
@@ -223,7 +224,7 @@ impl Api {
             .await?
             .error_for_status()?;
 
-        return Ok(true);
+        Ok(true)
     }
 
     /// Signs the current user out
@@ -265,7 +266,7 @@ impl Api {
             .await?
             .error_for_status()?;
 
-        return Ok(true);
+        Ok(true)
     }
 
     /// Sends password recovery email
@@ -296,11 +297,11 @@ impl Api {
             .await?
             .error_for_status()?;
 
-        return Ok(true);
+        Ok(true)
     }
 
     pub fn get_url_for_provider(&self, provider: &str) -> String {
-        return format!("{}/authorize?provider={}", self.url, provider);
+        format!("{}/authorize?provider={}", self.url, provider)
     }
 
     /// Refreshes the current session by refresh token
@@ -343,7 +344,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(session);
+        Ok(session)
     }
 
     /// Gets a user by access token
@@ -388,7 +389,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Updates a user
@@ -449,7 +450,7 @@ impl Api {
             .json::<UserUpdate>()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Invites a user via email
@@ -489,7 +490,7 @@ impl Api {
             .json::<User>()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Lists all users based on a query string
@@ -535,7 +536,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(users);
+        Ok(users)
     }
 
     /// Gets a user by id
@@ -575,7 +576,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Creates a user
@@ -619,7 +620,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Updates a user by id
@@ -678,7 +679,7 @@ impl Api {
             .json()
             .await?;
 
-        return Ok(user);
+        Ok(user)
     }
 
     /// Deletes a user by id
@@ -717,6 +718,6 @@ impl Api {
             .await?
             .error_for_status()?;
 
-        return Ok(true);
+        Ok(true)
     }
 }
