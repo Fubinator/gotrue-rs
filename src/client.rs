@@ -6,6 +6,9 @@ use crate::{
     user_update::UserUpdate,
 };
 
+///
+/// Represents a client used to interact with a Gotrue Server.
+///
 #[derive(Debug, Clone)]
 pub struct Client {
     current_session: Option<Session>,
@@ -20,9 +23,9 @@ impl Client {
     /// ```
     /// use go_true::Client;
     ///
-    /// let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// let client = Client::new("http://your.gotrue.endpoint");
     /// ```
-    pub fn new(url: String) -> Client {
+    pub fn new(url: &str) -> Client {
         Client {
             current_session: None,
             api: Api::new(url),
@@ -38,7 +41,7 @@ impl Client {
     ///
     /// #[tokio::main]
     ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    ///     let mut client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
     ///     let password = "some_password".to_string();
     ///     let res = client
@@ -49,7 +52,7 @@ impl Client {
     pub async fn sign_up(
         &mut self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: &str,
     ) -> Result<Session, Error> {
         self.current_session = None;
         let result = self.api.sign_up(email_or_phone, password).await;
@@ -88,7 +91,7 @@ impl Client {
     pub async fn sign_in(
         &mut self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: &str,
     ) -> Result<Session, Error> {
         self.current_session = None;
         let result = self.api.sign_in(email_or_phone, password).await;
@@ -144,6 +147,7 @@ impl Client {
         }
     }
 
+    /// Verifies an OTP request.
     pub async fn verify_otp<T: serde::Serialize>(&mut self, params: T) -> Result<bool, Error> {
         self.current_session = None;
         let result = self.api.verify_otp(params).await;
@@ -212,6 +216,7 @@ impl Client {
         }
     }
 
+    /// Update a user.
     pub async fn update_user(&self, user: UserAttributes) -> Result<UserUpdate, Error> {
         let session = match &self.current_session {
             Some(s) => s,

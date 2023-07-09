@@ -6,6 +6,9 @@ use crate::{
     user_update::UserUpdate,
 };
 
+///
+/// Represents the API of Gotrue.
+///
 #[derive(Debug, Clone)]
 pub struct Api {
     url: String,
@@ -13,9 +16,12 @@ pub struct Api {
     client: reqwest::Client,
 }
 
+/// Represent either an email or phone number for OTP.
 #[derive(Debug, Clone)]
 pub enum EmailOrPhone {
+    /// Email
     Email(String),
+    /// Phone number
     Phone(String),
 }
 
@@ -27,11 +33,11 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("http://your.gotrue.endpoint".to_string());
+    /// let client = Api::new("http://your.gotrue.endpoint");
     /// ```
-    pub fn new(url: String) -> Api {
+    pub fn new(url: &str) -> Api {
         Api {
-            url,
+            url: url.to_owned(),
             headers: HeaderMap::new(),
             client: reqwest::Client::new(),
         }
@@ -45,7 +51,7 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("https://your.gotrue.endpoint".to_string())
+    /// let client = Api::new("https://your.gotrue.endpoint")
     ///     .insert_header("apikey", "super.secret.key");
     /// ```
     pub fn insert_header(
@@ -69,20 +75,20 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
+    ///     let url = "http://localhost:9998";
     ///     let mut client = Api::new(url);
     ///
-    ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let email = "email@example.com";
+    ///     let password = "Abcd1234!";
     ///
-    ///     let result = client.sign_up(EmailOrPhone::Email(email), &password).await;
+    ///     let result = client.sign_up(EmailOrPhone::Email(email.to_string()), &password).await;
     ///     Ok(())
     /// }
     /// ```
     pub async fn sign_up(
         &self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: &str,
     ) -> Result<Session, reqwest::Error> {
         let endpoint = format!("{}/signup", self.url);
 
@@ -120,13 +126,13 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
+    ///     let url = "http://localhost:9998";
     ///     let mut client = Api::new(url);
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let result = client.sign_in(EmailOrPhone::Email(email), &password).await;
+    ///     let result = client.sign_in(EmailOrPhone::Email(email), password).await;
     ///     
     ///     Ok(())
     /// }
@@ -134,7 +140,7 @@ impl Api {
     pub async fn sign_in(
         &self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: &str,
     ) -> Result<Session, reqwest::Error> {
         let query_string = String::from("?grant_type=password");
 
@@ -174,7 +180,7 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
+    ///     let url = "http://localhost:9998";
     ///     let mut client = Api::new(url);
     ///
     ///     let email = "email@example.com".to_string();
@@ -212,6 +218,13 @@ impl Api {
         Ok(true)
     }
 
+    /// Verifies a phone signup or sms otp.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// // TODO
+    /// ```
     pub async fn verify_otp<T: serde::Serialize>(&self, params: T) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/verify", self.url);
 
@@ -232,12 +245,12 @@ impl Api {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use go_true::{Api, EmailOrPhone};
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
+    ///     let url = "http://localhost:9998";
     ///     let mut client = Api::new(url);
     ///
     ///
@@ -250,7 +263,7 @@ impl Api {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
+    pub async fn sign_out(&self, access_token: &str) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
 
         let mut headers: HeaderMap = self.headers.clone();
@@ -301,6 +314,7 @@ impl Api {
         Ok(true)
     }
 
+    /// Returns the url for a given provider.
     pub fn get_url_for_provider(&self, provider: &str) -> String {
         format!("{}/authorize?provider={}", self.url, provider)
     }

@@ -1,3 +1,4 @@
+#![deny(missing_docs)]
 //! # go_true
 //!
 //! [GoTrue][gotrue] client-side library.
@@ -37,7 +38,7 @@
 
 mod api;
 mod client;
-pub mod error;
+mod error;
 mod session;
 mod user;
 mod user_attributes;
@@ -47,4 +48,5 @@ mod user_update;
 pub use api::Api;
 pub use api::EmailOrPhone;
 pub use client::Client;
+pub use error::Error;
 pub use user_attributes::UserAttributes;

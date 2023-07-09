@@ -22,13 +22,13 @@ use go_true::Client;
 
 #[tokio::main]
 async fn main() {
-    let url = "http://localhost:9998".to_string();
+    let url = "http://localhost:9998";
     let mut client = Client::new(url);
 
-    let email = "email@example.com".to_string();
-    let password = "Abcd1234!".to_string();
+    let email = "email@example.com";
+    let password = "Abcd1234!";
 
-    let session = client.sign_up(&email, &password).await;
+    let session = client.sign_up(email, password).await?;
 
     println!("{:?}", session);
 }
