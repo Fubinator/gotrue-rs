@@ -389,7 +389,7 @@ impl Api {
     /// # Example
     ///
     /// ```
-    /// use go_true::{Api, EmailOrPhone};
+    /// use go_true::{Api, EmailOrPhone, UserAttributes};
     /// use serde_json::json;
     ///
     /// #[tokio::main]
@@ -405,12 +405,12 @@ impl Api {
     ///
     ///     let new_email = "otheremail@example.com";
     ///     let attributes = UserAttributes {
-    ///         email: new_email.clone(),
+    ///         email: new_email.to_string(),
     ///         password: "Abcd12345!".to_string(),
     ///         data: json!({ "test": "test" }),
     ///     };
     ///
-    ///     let updatedUser = client.update_user(attributes, &session.access_token).await?;
+    ///     let updated_user = client.update_user(attributes, &session.access_token).await?;
     ///     Ok(())
     /// }
     /// ```
@@ -582,7 +582,7 @@ impl Api {
     ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let user = AdminUserAttributes {
-    ///         email: "createemail@example.com",
+    ///         email: "createemail@example.com".to_string(),
     ///         password: Some(String::from("Abcd1234!")),
     ///         data: None,
     ///         email_confirmed: None,
@@ -683,7 +683,7 @@ impl Api {
     ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let user = AdminUserAttributes {
-    ///         email: "delete@example.com",
+    ///         email: "delete@example.com".to_string(),
     ///         password: Some(String::from("Abcd1234!")),
     ///         data: None,
     ///         email_confirmed: None,

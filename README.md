@@ -19,7 +19,7 @@ go_true = "0.1.1"
 To create an account, create a new client and execute the `sign_up` function with email and password:
 
 ```rust
-use go_true::Client;
+use go_true::{Client, EmailOrPhone};
 
 #[tokio::main]
 async fn main() {
@@ -28,7 +28,7 @@ async fn main() {
     let email = "email@example.com".to_string();
     let password = "Abcd1234!";
 
-    let session = client.sign_up(&email, password).await;
+    let session = client.sign_up(EmailOrPhone::Email(email), password).await;
 
     println!("{:?}", session);
 }

@@ -37,7 +37,7 @@ impl Client {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let mut client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
     ///     let password = "some_password";
     ///     let res = client
@@ -76,7 +76,7 @@ impl Client {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let mut client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
     ///     let password = "some_password";
     ///     let res = client
@@ -236,11 +236,11 @@ impl Client {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let mut client = Client::new("http://your.gotrue.endpoint");
     ///
     ///     // sign in first
     ///
-    ///     client.refresh_session().await?:
+    ///     client.refresh_session().await?;
     ///     Ok(())
     /// }
     pub async fn refresh_session(&mut self) -> Result<Session, Error> {
@@ -272,10 +272,10 @@ impl Client {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let mut client = Client::new("http://your.gotrue.endpoint");
     ///     let token = "refresh_token";
     ///
-    ///     let session = client.set_session(token).await?:
+    ///     let session = client.set_session(token).await?;
     ///     Ok(())
     /// }
     pub async fn set_session(&mut self, refresh_token: impl AsRef<str>) -> Result<Session, Error> {
