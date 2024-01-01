@@ -19,9 +19,9 @@ impl Client {
     /// ```
     /// use go_true::Client;
     ///
-    /// let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// let client = Client::new("http://your.gotrue.endpoint");
     /// ```
-    pub fn new(url: String) -> Client {
+    pub fn new(url: impl Into<String>) -> Client {
         Client {
             current_session: None,
             api: Api::new(url),
@@ -36,22 +36,22 @@ impl Client {
     /// use go_true::{Client, EmailOrPhone};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
-    ///     let password = "some_password".to_string();
+    ///     let password = "some_password";
     ///     let res = client
-    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .sign_up(EmailOrPhone::Email(email), password)
     ///         .await?;
     ///     Ok(())
     /// }
     pub async fn sign_up(
         &mut self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: impl AsRef<str>,
     ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_up(email_or_phone, &password).await;
+        let result = self.api.sign_up(email_or_phone, password).await;
 
         match result {
             Ok(session) => {
@@ -75,22 +75,22 @@ impl Client {
     /// use go_true::{Client, EmailOrPhone};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
-    ///     let password = "some_password".to_string();
+    ///     let password = "some_password";
     ///     let res = client
-    ///         .sign_in(EmailOrPhone::Email(email), &password)
+    ///         .sign_in(EmailOrPhone::Email(email), password)
     ///         .await?;
     ///     Ok(())
     /// }
     pub async fn sign_in(
         &mut self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: impl AsRef<str>,
     ) -> Result<Session, Error> {
         self.current_session = None;
-        let result = self.api.sign_in(email_or_phone, &password).await;
+        let result = self.api.sign_in(email_or_phone, password).await;
 
         match result {
             Ok(session) => {
@@ -114,8 +114,8 @@ impl Client {
     /// use go_true::{Client, EmailOrPhone};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
     ///     let email = "some_email".to_string();
     ///
     ///     let res = client
@@ -164,8 +164,8 @@ impl Client {
     /// use go_true::{Client};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
     ///
     ///     // Sign in first
     ///
@@ -192,15 +192,15 @@ impl Client {
     /// use go_true::{Client};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
-    ///     let email = "some_email".to_string()
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let email = "some_email";
     ///
-    ///     let res = client.reset_password_for_email(&email).await?;
+    ///     let res = client.reset_password_for_email(email).await?;
     ///     Ok(())
     /// }
-    pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, Error> {
-        let result = self.api.reset_password_for_email(&email).await;
+    pub async fn reset_password_for_email(&self, email: impl AsRef<str>) -> Result<bool, Error> {
+        let result = self.api.reset_password_for_email(email).await;
 
         match result {
             Ok(_) => return Ok(true),
@@ -235,8 +235,8 @@ impl Client {
     /// use go_true::{Client};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
     ///
     ///     // sign in first
     ///
@@ -271,15 +271,15 @@ impl Client {
     /// use go_true::{Client};
     ///
     /// #[tokio::main]
-    ///     async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let client = Client::new("http://your.gotrue.endpoint".to_string());
-    ///     let token = "refresh_token".to_string();
+    /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let client = Client::new("http://your.gotrue.endpoint");
+    ///     let token = "refresh_token";
     ///
     ///     let session = client.set_session(token).await?:
     ///     Ok(())
     /// }
-    pub async fn set_session(&mut self, refresh_token: &str) -> Result<Session, Error> {
-        if refresh_token.len() < 1 {
+    pub async fn set_session(&mut self, refresh_token: impl AsRef<str>) -> Result<Session, Error> {
+        if refresh_token.as_ref().len() < 1 {
             return Err(Error::NotAuthenticated);
         }
 

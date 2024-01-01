@@ -25,11 +25,11 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("http://your.gotrue.endpoint".to_string());
+    /// let client = Api::new("http://your.gotrue.endpoint");
     /// ```
-    pub fn new(url: String) -> Api {
+    pub fn new(url: impl Into<String>) -> Api {
         Api {
-            url,
+            url: url.into(),
             headers: HeaderMap::new(),
             client: reqwest::Client::new(),
         }
@@ -43,7 +43,7 @@ impl Api {
     /// ```
     /// use go_true::Api;
     ///
-    /// let client = Api::new("https://your.gotrue.endpoint".to_string())
+    /// let client = Api::new("https://your.gotrue.endpoint")
     ///     .insert_header("apikey", "super.secret.key");
     /// ```
     pub fn insert_header(
@@ -67,31 +67,30 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let result = client.sign_up(EmailOrPhone::Email(email), &password).await;
+    ///     let result = client.sign_up(EmailOrPhone::Email(email), password).await;
     ///     Ok(())
     /// }
     /// ```
     pub async fn sign_up(
         &self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: impl AsRef<str>,
     ) -> Result<Session, reqwest::Error> {
         let endpoint = format!("{}/signup", self.url);
 
         let body = match email_or_phone {
             EmailOrPhone::Email(email) => json!({
                 "email": email,
-                "password": &password,
+                "password": password.as_ref(),
             }),
             EmailOrPhone::Phone(phone) => json!({
                 "phone": phone,
-                "password": &password
+                "password": password.as_ref()
             }),
         };
 
@@ -118,13 +117,12 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let result = client.sign_in(EmailOrPhone::Email(email), &password).await;
+    ///     let result = client.sign_in(EmailOrPhone::Email(email), password).await;
     ///     
     ///     Ok(())
     /// }
@@ -132,7 +130,7 @@ impl Api {
     pub async fn sign_in(
         &self,
         email_or_phone: EmailOrPhone,
-        password: &String,
+        password: impl AsRef<str>,
     ) -> Result<Session, reqwest::Error> {
         let query_string = String::from("?grant_type=password");
 
@@ -141,11 +139,11 @@ impl Api {
         let body = match email_or_phone {
             EmailOrPhone::Email(email) => json!({
                 "email": email,
-                "password": &password,
+                "password": password.as_ref(),
             }),
             EmailOrPhone::Phone(phone) => json!({
                 "phone": phone,
-                "password": &password
+                "password": password.as_ref()
             }),
         };
 
@@ -172,8 +170,7 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
     ///
@@ -235,24 +232,22 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
-    ///
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), password).await?;
     ///     client.sign_out(&session.access_token);
     ///
     ///     Ok(())
     /// }
     /// ```
-    pub async fn sign_out(&self, access_token: &String) -> Result<bool, reqwest::Error> {
+    pub async fn sign_out(&self, access_token: impl AsRef<str>) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/logout", self.url);
 
         let mut headers: HeaderMap = self.headers.clone();
-        let bearer = format!("Bearer {access_token}");
+        let bearer = format!("Bearer {}", access_token.as_ref());
         headers.insert(
             "Authorization",
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
@@ -275,17 +270,19 @@ impl Api {
     /// ```
     /// use go_true::{Api, EmailOrPhone};
     ///
-    /// let url = "http://localhost:9998".to_string();
-    /// let mut client = Api::new(url);
-    /// let email = "random@mail.com".to_string();
+    /// let mut client = Api::new("http://localhost:9998");
+    /// let email = "random@mail.com";
     ///
-    /// client.reset_password_for_email(&email);
+    /// client.reset_password_for_email(email);
     /// ```
-    pub async fn reset_password_for_email(&self, email: &str) -> Result<bool, reqwest::Error> {
+    pub async fn reset_password_for_email(
+        &self,
+        email: impl AsRef<str>,
+    ) -> Result<bool, reqwest::Error> {
         let endpoint = format!("{}/recover", self.url);
 
         let body = json!({
-            "email": &email,
+            "email": email.as_ref(),
         });
 
         self.client
@@ -312,14 +309,12 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
-    ///
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), password).await?;
     ///     client.refresh_access_token(&session.refresh_token);
     ///
     ///     Ok(())
@@ -327,10 +322,10 @@ impl Api {
     /// ```
     pub async fn refresh_access_token(
         &self,
-        refresh_token: &str,
+        refresh_token: impl AsRef<str>,
     ) -> Result<Session, reqwest::Error> {
         let endpoint = format!("{}/token?grant_type=refresh_token", self.url);
-        let body = json!({ "refresh_token": refresh_token });
+        let body = json!({ "refresh_token": refresh_token.as_ref() });
 
         let session: Session = self
             .client
@@ -355,24 +350,22 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
-    ///
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), password).await?;
     ///     let user = client.get_user(&session.access_token);
     ///
     ///     Ok(())
     /// }
     /// ```
-    pub async fn get_user(&self, jwt: &str) -> Result<User, reqwest::Error> {
+    pub async fn get_user(&self, jwt: impl AsRef<str>) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/user", self.url);
 
         let mut headers: HeaderMap = self.headers.clone();
-        let bearer = format!("Bearer {jwt}");
+        let bearer = format!("Bearer {}", jwt.as_ref());
         headers.insert(
             "Authorization",
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
@@ -401,15 +394,14 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
-    ///     client.sign_up(EmailOrPhone::Email(email.clone()), &password)
+    ///     client.sign_up(EmailOrPhone::Email(email.clone()), password)
     ///         .await?;
-    ///     let session = client.sign_in(EmailOrPhone::Email(email), &password).await?;
+    ///     let session = client.sign_in(EmailOrPhone::Email(email), password).await?;
     ///
     ///     let new_email = "otheremail@example.com";
     ///     let attributes = UserAttributes {
@@ -425,12 +417,12 @@ impl Api {
     pub async fn update_user(
         &self,
         user: UserAttributes,
-        jwt: &str,
+        jwt: impl AsRef<str>,
     ) -> Result<UserUpdate, reqwest::Error> {
         let endpoint = format!("{}/user", self.url);
 
         let mut headers: HeaderMap = self.headers.clone();
-        let bearer = format!("Bearer {jwt}");
+        let bearer = format!("Bearer {}", jwt.as_ref());
         headers.insert(
             "Authorization",
             HeaderValue::from_str(bearer.as_ref()).expect("Invalid header value."),
@@ -461,21 +453,23 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
-    ///     let email = "email@example.com".to_string();
+    ///     let email = "email@example.com";
     ///
-    ///     let user = client.invite_user_by_email(&email).await?;
+    ///     let user = client.invite_user_by_email(email).await?;
     ///
     ///     Ok(())
     /// }
     /// ```
-    pub async fn invite_user_by_email(&self, email: &str) -> Result<User, reqwest::Error> {
+    pub async fn invite_user_by_email(
+        &self,
+        email: impl AsRef<str>,
+    ) -> Result<User, reqwest::Error> {
         let endpoint = format!("{}/invite", self.url);
 
         let body = json!({
-            "email": &email,
+            "email": email.as_ref(),
         });
 
         let user: User = self
@@ -501,14 +495,13 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
     ///     client
-    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .sign_up(EmailOrPhone::Email(email), password)
     ///         .await?;
     ///
     ///     let users = client.list_users(None).await?;
@@ -547,14 +540,13 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let email = "email@example.com".to_string();
-    ///     let password = "Abcd1234!".to_string();
+    ///     let password = "Abcd1234!";
     ///
     ///     let session = client
-    ///         .sign_up(EmailOrPhone::Email(email), &password)
+    ///         .sign_up(EmailOrPhone::Email(email), password)
     ///         .await?;
     ///
     ///     let user = client.get_user_by_id(&session.user.id).await?;
@@ -562,8 +554,8 @@ impl Api {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn get_user_by_id(&self, user_id: &str) -> Result<User, reqwest::Error> {
-        let endpoint = format!("{}/admin/users/{}", self.url, user_id);
+    pub async fn get_user_by_id(&self, user_id: impl AsRef<str>) -> Result<User, reqwest::Error> {
+        let endpoint = format!("{}/admin/users/{}", self.url, user_id.as_ref());
 
         let user: User = self
             .client
@@ -587,8 +579,7 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let user = AdminUserAttributes {
     ///         email: "createemail@example.com",
@@ -631,8 +622,7 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let user = AdminUserAttributes {
     ///         email: "oldemail@example.com",
@@ -660,10 +650,10 @@ impl Api {
     /// ```
     pub async fn update_user_by_id<T: serde::Serialize>(
         &self,
-        id: &str,
+        id: impl AsRef<str>,
         user: T,
     ) -> Result<User, reqwest::Error> {
-        let endpoint = format!("{}/admin/users/{}", self.url, id);
+        let endpoint = format!("{}/admin/users/{}", self.url, id.as_ref());
 
         let json = serde_json::to_value(&user).unwrap();
 
@@ -690,8 +680,7 @@ impl Api {
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let url = "http://localhost:9998".to_string();
-    ///     let mut client = Api::new(url);
+    ///     let mut client = Api::new("http://localhost:9998");
     ///
     ///     let user = AdminUserAttributes {
     ///         email: "delete@example.com",
@@ -707,8 +696,8 @@ impl Api {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn delete_user(&self, user_id: &str) -> Result<bool, reqwest::Error> {
-        let endpoint = format!("{}/admin/users/{}", self.url, user_id);
+    pub async fn delete_user(&self, user_id: impl AsRef<str>) -> Result<bool, reqwest::Error> {
+        let endpoint = format!("{}/admin/users/{}", self.url, user_id.as_ref());
 
         self.client
             .delete(endpoint)
