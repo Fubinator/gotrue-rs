@@ -4,7 +4,7 @@ use serde_json::json;
 use std::error::Error;
 
 fn get_client() -> Client {
-    return Client::new("http://localhost:9998".to_string());
+    return Client::new("http://localhost:9998");
 }
 
 fn get_random_email() -> String {
@@ -21,11 +21,11 @@ fn get_random_email() -> String {
 #[tokio::test]
 async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     let res = client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
 
     assert_eq!(email, res.user.email);
@@ -36,14 +36,14 @@ async fn it_signs_up_with_email() -> Result<(), Box<dyn Error>> {
 #[tokio::test]
 async fn it_should_throw_email_already_taken_error() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
 
-    let result = client.sign_up(EmailOrPhone::Email(email), &password).await;
+    let result = client.sign_up(EmailOrPhone::Email(email), password).await;
 
     match result {
         Ok(_) => panic!("Should throw error"),
@@ -56,14 +56,14 @@ async fn it_should_throw_email_already_taken_error() -> Result<(), Box<dyn Error
 #[tokio::test]
 async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
     let res = client
-        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .sign_in(EmailOrPhone::Email(email.clone()), password)
         .await?;
 
     assert_eq!(res.user.email, email);
@@ -74,16 +74,14 @@ async fn it_signs_in_with_email() -> Result<(), Box<dyn Error>> {
 async fn it_should_return_error_when_credentials_are_wrong_on_signin() -> Result<(), Box<dyn Error>>
 {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
-    client
-        .sign_up(EmailOrPhone::Email(email), &password)
-        .await?;
+    client.sign_up(EmailOrPhone::Email(email), password).await?;
 
     let wrong_email = get_random_email();
     let result = client
-        .sign_in(EmailOrPhone::Email(wrong_email), &password)
+        .sign_in(EmailOrPhone::Email(wrong_email), password)
         .await;
 
     match result {
@@ -110,14 +108,14 @@ async fn it_should_return_error_if_no_session_when_refreshing() -> Result<(), Bo
 #[tokio::test]
 async fn it_should_refresh_session() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
     let old_session = client
-        .sign_in(EmailOrPhone::Email(email.clone()), &password)
+        .sign_in(EmailOrPhone::Email(email.clone()), password)
         .await?;
 
     let session = client.refresh_session().await?;
@@ -131,11 +129,11 @@ async fn it_should_refresh_session() -> Result<(), Box<dyn Error>> {
 #[tokio::test]
 async fn it_send_magic_link_with_valid_email() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
     let res = client.send_otp(EmailOrPhone::Email(email), None).await?;
 
@@ -160,15 +158,13 @@ async fn it_does_not_send_magic_link_with_invalid_email() -> Result<(), Box<dyn 
 #[tokio::test]
 async fn it_should_log_out() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
-    client
-        .sign_in(EmailOrPhone::Email(email), &password)
-        .await?;
+    client.sign_in(EmailOrPhone::Email(email), password).await?;
 
     let success = client.sign_out().await?;
 
@@ -192,11 +188,11 @@ async fn it_should_return_error_in_log_out_if_no_session() -> Result<(), Box<dyn
 #[tokio::test]
 async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
     let res = client.reset_password_for_email(&email).await?;
 
@@ -207,15 +203,13 @@ async fn it_should_send_password_recovery_email() -> Result<(), Box<dyn Error>> 
 #[tokio::test]
 async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
-    client
-        .sign_in(EmailOrPhone::Email(email), &password)
-        .await?;
+    client.sign_in(EmailOrPhone::Email(email), password).await?;
 
     let new_email = get_random_email();
     let attributes = UserAttributes {
@@ -234,11 +228,11 @@ async fn it_should_update_user() -> Result<(), Box<dyn Error>> {
 #[tokio::test]
 async fn it_should_set_session_by_refresh_token() -> Result<(), Box<dyn Error>> {
     let email = get_random_email();
-    let password = String::from("Abcd1234!");
+    let password = "Abcd1234!";
 
     let mut client = get_client();
     let old_session = client
-        .sign_up(EmailOrPhone::Email(email.clone()), &password)
+        .sign_up(EmailOrPhone::Email(email.clone()), password)
         .await?;
 
     let session = client.set_session(&old_session.refresh_token).await?;

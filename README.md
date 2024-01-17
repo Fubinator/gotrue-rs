@@ -4,9 +4,10 @@
 [![Crate](https://img.shields.io/crates/v/go_true.svg)](https://crates.io/crates/go_true)
 [![License: MIT](https://img.shields.io/crates/l/go_true.svg)](#license)
 
-This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. The library is currently under development. Most of the features are already built in, but there are still some changes to be made and everything still needs to be documented. 
+This is a [GoTrue](https://github.com/supabase/gotrue) client implementation in rust. The library is currently under development. Most of the features are already built in, but there are still some changes to be made and everything still needs to be documented.
 
 ## Usage
+
 Add the following line to your `Cargo.toml`:
 
 ```toml
@@ -18,17 +19,16 @@ go_true = "0.1.1"
 To create an account, create a new client and execute the `sign_up` function with email and password:
 
 ```rust
-use go_true::Client;
+use go_true::{Client, EmailOrPhone};
 
 #[tokio::main]
 async fn main() {
-    let url = "http://localhost:9998".to_string();
-    let mut client = Client::new(url);
+    let mut client = Client::new("http://localhost:9998");
 
     let email = "email@example.com".to_string();
-    let password = "Abcd1234!".to_string();
+    let password = "Abcd1234!";
 
-    let session = client.sign_up(&email, &password).await;
+    let session = client.sign_up(EmailOrPhone::Email(email), password).await;
 
     println!("{:?}", session);
 }

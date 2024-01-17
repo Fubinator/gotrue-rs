@@ -18,13 +18,12 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     let url = "http://localhost:9998".to_string();
-//!     let mut client = Client::new(url);
+//!     let mut client = Client::new("http://localhost:9998");
 //!
 //!     let email = "email@example.com".to_string();
-//!     let password = "Abcd1234!".to_string();
+//!     let password = "Abcd1234!";
 //!
-//!     let session = client.sign_up(EmailOrPhone::Email(email), &password).await;
+//!     let session = client.sign_up(EmailOrPhone::Email(email), password).await;
 //!
 //!     println!("{:?}", session);
 //! }
